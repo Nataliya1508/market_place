@@ -6,9 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig from '@app/ormconfig';
 import { UserController } from '@app/user/user.controller';
 import { UserService } from '@app/user/user.service';
+import { UserEntity } from '@app/user/user.entity';
 
 @Module({
-  imports: [UserModule, TypeOrmModule.forRoot(ormconfig)],
+  imports: [
+    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forFeature([UserEntity]),
+    UserModule,
+  ],
   controllers: [UserController, AppController],
   providers: [AppService, UserService],
 })

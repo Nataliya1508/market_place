@@ -1,22 +1,31 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { hash } from 'bcrypt';
 
-@Entity()
+@Entity({ name: 'users' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  username: string;
+  name: string;
+
+  @Column({ default: '' })
+  lastName: string;
 
   @Column({ default: '' })
   image: string;
 
-  @Column()
+  @Column({ default: 'user' })
   role: string;
 
   @Column()
+  phoneNumber: number;
+
+  @Column({ unique: true })
   email: string;
+
+  @Column()
+  address: string;
 
   @Column({ unique: true })
   password: string;
@@ -24,7 +33,7 @@ export class UserEntity {
   @Column({ default: false })
   emailVerified: boolean;
 
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
 
   @BeforeInsert()

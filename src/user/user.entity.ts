@@ -27,7 +27,7 @@ export class UserEntity {
   @Column()
   address: string;
 
-  @Column({ unique: true })
+  @Column({ select: false })
   password: string;
 
   @Column({ default: false })

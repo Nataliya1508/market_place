@@ -1,6 +1,6 @@
-import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from '@app/types/userResponse.interface';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -13,8 +13,12 @@ import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
-  @InjectRepository(UserEntity)
-  private readonly userRepository: Repository<UserEntity>;
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly configService: ConfigService,
+  ) {}
+
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const userByEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
@@ -88,13 +92,15 @@ export class UserService {
   }
 
   generateJwt(user: UserEntity): string {
+    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+
     return sign(
       {
         id: user.id,
         name: user.name,
         email: user.email,
       },
-      JWT_SECRET,
+      jwtSecret,
     );
   }
 

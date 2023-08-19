@@ -2,13 +2,14 @@ import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from '@app/types/userResponse.interface';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { Repository } from 'typeorm';
+
 import { CreateUserDto } from './dto/createUser.dto';
 import { LoginUserDto } from './dto/login.dto';
-import { UserEntity } from './user.entity';
-import { compare } from 'bcrypt';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
     const userByEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
+
     if (userByEmail) {
       throw new HttpException(
         'Email is already in use ',
@@ -26,6 +28,7 @@ export class UserService {
     }
     const newUser = new UserEntity();
     Object.assign(newUser, createUserDto);
+
     return await this.userRepository.save(newUser);
   }
 
@@ -46,6 +49,7 @@ export class UserService {
         'name',
       ],
     });
+
     if (!user) {
       throw new HttpException(
         'Invalid email or password',
@@ -57,6 +61,7 @@ export class UserService {
       loginUserDto.password,
       user.password,
     );
+
     if (!isPassswordCorrect) {
       throw new HttpException(
         'Invalid email or password',
@@ -64,6 +69,7 @@ export class UserService {
       );
     }
     delete user.password;
+
     return user;
   }
 
@@ -77,6 +83,7 @@ export class UserService {
   ): Promise<UserEntity> {
     const user = await this.findById(userId);
     Object.assign(user, updateUserDto);
+
     return await this.userRepository.save(user);
   }
 

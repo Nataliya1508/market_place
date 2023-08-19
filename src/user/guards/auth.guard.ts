@@ -13,6 +13,7 @@ export class AuthGuard implements CanActivate {
     const request = context
       .switchToHttp()
       .getRequest<ExpressRequestInterfase>();
+
     if (request.user) {
       return true;
     }

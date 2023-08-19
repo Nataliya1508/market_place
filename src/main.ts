@@ -1,9 +1,4 @@
 import { ValidationPipe } from '@nestjs/common';
-
-if (!process.env.IS_TS_NODE) {
-  require('module-alias/register');
-}
-
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 

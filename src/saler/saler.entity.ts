@@ -1,28 +1,13 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { hash } from 'bcrypt';
 
-enum Role {
-  Seller = 'seller',
-  Buyer = 'buyer',
-  Admin = 'admin',
-}
-
-@Entity({ name: 'users' })
-export class UserEntity {
+@Entity({ name: 'salers' })
+export class SalerEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  name: string;
-
-  @Column({ default: '' })
-  lastName: string;
-
-  @Column({ default: '' })
-  image: string;
-
-  @Column({ type: 'enum', enum: Role, default: Role.Buyer })
-  role: Role;
+  companyName: string;
 
   @Column()
   phoneNumber: number;
@@ -30,8 +15,26 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
+  @Column({ default: '' })
+  typeSaler: string;
+
   @Column()
   address: string;
+
+  @Column({ default: '' })
+  workingHours: string;
+
+  @Column({ default: '' })
+  image: string;
+
+  @Column({ default: '' })
+  logo: string;
+
+  @Column({ default: '' })
+  aboutUs: string;
+
+  @Column()
+  contactPerson: number;
 
   @Column({ select: false })
   password: string;

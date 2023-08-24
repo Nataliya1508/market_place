@@ -1,3 +1,5 @@
+import { SalerEntity } from '@app/saler/saler.entity';
+import { SalerModule } from '@app/saler/saler.module';
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { UserController } from '@app/user/user.controller';
 import { UserEntity } from '@app/user/user.entity';
@@ -22,12 +24,16 @@ import { UserModule } from './user/user.module';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false,
+        ssl: {
+          rejectUnauthorized: false,
+        },
         migrations: [__dirname + '/database/migrations/**/*{.ts, .js}'],
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, SalerEntity]),
     UserModule,
+    SalerModule,
   ],
   controllers: [UserController],
   providers: [UserService],

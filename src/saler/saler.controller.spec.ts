@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { SalerController } from './saler.controller';
 
 describe('SalerController', () => {

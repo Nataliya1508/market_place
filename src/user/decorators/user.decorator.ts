@@ -9,5 +9,6 @@ export const User = createParamDecorator((data: any, ctx: ExecutionContext) => {
   } else if (data) {
     return request.user[data];
   }
+
   return request.user;
 });

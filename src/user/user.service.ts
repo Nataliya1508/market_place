@@ -1,4 +1,4 @@
-import { JWT_SECRET } from '@app/config';
+import { JWT_SECRET } from '@app/config/config';
 import { UserResponseInterface } from '@app/types/userResponse.interface';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';

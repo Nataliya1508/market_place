@@ -42,7 +42,7 @@ export class UserController {
   }
 
   @Get('user')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async carrentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
     return this.userService.buildUserResponse(user);
   }

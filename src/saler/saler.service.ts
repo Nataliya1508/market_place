@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SalerEntity } from './saler.entity';
 import { sign } from 'jsonwebtoken';
-import { JWT_SECRET } from '@app/config/config';
+import { JWT_SECRET } from '@app/config';
 import { SalerResponseInterface } from '@app/types/salerResponse.interface';
 import { LoginUserDto } from '@app/user/dto/login.dto';
 import { compare } from 'bcrypt';

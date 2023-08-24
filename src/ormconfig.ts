@@ -2,13 +2,16 @@ import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConne
 
 const config: PostgresConnectionOptions = {
   type: 'postgres',
-  host: 'dpg-cifijounqql1s38qi9p0-a',
+  host: 'dpg-cjjg5pocfp5c738n3o20-a.frankfurt-postgres.render.com',
   port: 5432,
-  username: 'nataly',
-  password: 'FR3FJ85RRqqOfdfwKXmVuCkRm0kdhMqw',
-  database: 'marketplace_3vsq',
+  username: 'admin',
+  password: 'LNKWg3aVQnBxwMXPoR2obTyd5hxphkPS',
+  database: 'marketplace_vsha',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
+  ssl: {
+    rejectUnauthorized: false, // Опция для разрешения самоподписанных сертификатов (для тестовых целей)
+  },
   migrations: [__dirname + '/migrations/**/*{.ts, .js}'],
 };
 

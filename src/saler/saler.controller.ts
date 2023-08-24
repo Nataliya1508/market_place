@@ -8,6 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+
 import { SalerEntity } from './saler.entity';
 // import { CreateSalerDto } from './dto/createSaler.dto';
 import { SalerService } from './saler.service';
@@ -22,6 +23,7 @@ export class SalerController {
   ): Promise<SalerResponseInterface> {
     const saler = await this.salerService.createSaler(createSalerDto);
     console.log('saler', SalerEntity);
+
     return this.salerService.buildSalerResponse(saler);
   }
 
@@ -31,6 +33,7 @@ export class SalerController {
     @Body('saler') loginSalerDto: LoginUserDto,
   ): Promise<SalerResponseInterface> {
     const saler = await this.salerService.login(loginSalerDto);
+
     return await this.salerService.buildSalerResponse(saler);
   }
 }

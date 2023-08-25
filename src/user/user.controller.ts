@@ -42,6 +42,9 @@ export class UserController {
     return await this.userService.buildUserResponse(user);
   }
 
+  @ApiBody({ type: LoginUserDto })
+  @ApiOperation({ summary: 'Login' })
+  @ApiResponse({ status: 200, type: UserEntity })
   @Post('login')
   async login(
     @Body('user') loginUserDto: LoginUserDto,

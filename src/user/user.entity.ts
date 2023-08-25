@@ -46,7 +46,7 @@ export class UserEntity {
     example: 'Petra Hrygorenko, 23',
     description: 'delivery address',
   })
-  @Column({ default: '' })
+  @Column({ nullable: true })
   address: string;
 
   @ApiProperty({ example: 'N3456g5tjnfd', description: 'password' })

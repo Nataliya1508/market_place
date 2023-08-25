@@ -1,5 +1,10 @@
 import { UserResponseInterface } from '@app/types/userResponse.interface';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
@@ -102,6 +107,20 @@ export class UserService {
       },
       jwtSecret,
     );
+  }
+
+  public async findOneByEmail(email: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException(`User with this ${email} does not exist`);
+    }
+
+    return user;
+  }
+
+  public async verifyEmail(email: string): Promise<void> {
+    await this.userRepository.update({ email }, { emailVerified: true });
   }
 
   buildUserResponse(user: UserEntity): UserResponseInterface {

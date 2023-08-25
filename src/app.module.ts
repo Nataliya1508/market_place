@@ -8,6 +8,8 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { MailModule } from './mail/mail.module';
+import { MailerModule } from './mailer/mailer.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -15,33 +17,27 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
-        console.log(configService.get<string>('DATABASE_HOST'));
-        console.log(configService.get<number>('DATABASE_PORT'));
-        console.log(configService.get<string>('DATABASE_USERNAME'));
-        console.log(configService.get<string>('DATABASE_PASSWORD'));
-        console.log(configService.get<string>('DATABASE_NAME'));
-
-        return {
-          type: 'postgres',
-          host: configService.get<string>('DATABASE_HOST'),
-          port: Number(configService.get<number>('DATABASE_PORT')),
-          username: configService.get<string>('DATABASE_USERNAME'),
-          password: configService.get<string>('DATABASE_PASSWORD'),
-          database: configService.get<string>('DATABASE_NAME'),
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: false,
-          ssl: {
-            rejectUnauthorized: false,
-          },
-          migrations: [__dirname + '/database/migrations/**/*{.ts, .js}'],
-        };
-      },
+      useFactory: (configService: ConfigService): TypeOrmModuleOptions => ({
+        type: 'postgres',
+        host: configService.get<string>('DATABASE_HOST'),
+        port: Number(configService.get<number>('DATABASE_PORT')),
+        username: configService.get<string>('DATABASE_USERNAME'),
+        password: configService.get<string>('DATABASE_PASSWORD'),
+        database: configService.get<string>('DATABASE_NAME'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: false,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        migrations: [__dirname + '/database/migrations/**/*{.ts, .js}'],
+      }),
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([UserEntity, SalerEntity]),
     UserModule,
     SalerModule,
+    MailModule,
+    MailerModule,
   ],
   controllers: [UserController],
   providers: [UserService],

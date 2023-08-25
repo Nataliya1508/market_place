@@ -18,6 +18,12 @@ export class MailerService {
   }
 
   async sendMail(options: Options): Promise<void> {
-    return await this.transporter.sendMail(options);
+    await this.transporter.sendMail({
+      ...options,
+      envelope: {
+        from: `<${this.configService.get('EMAIL_SERVICE')}>`,
+        to: options.to.toString(),
+      },
+    });
   }
 }

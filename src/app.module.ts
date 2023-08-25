@@ -24,11 +24,16 @@ import { UserModule } from './user/user.module';
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false,
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        ssl:
+          configService.get<string>('DATABASE_SSL_ENABLED') === 'true'
+            ? {
+                rejectUnauthorized:
+                  configService.get<string>('DATABASE_REJECT_UNAUTHORIZED') ===
+                  'true',
+              }
+            : undefined,
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
         migrations: [__dirname + '/database/migrations/**/*{.ts, .js}'],
       }),
       inject: [ConfigService],

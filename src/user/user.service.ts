@@ -1,7 +1,10 @@
+import { MailService } from '@app/mail/mail.service';
 import { UserResponseInterface } from '@app/types/userResponse.interface';
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -22,6 +25,8 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => MailService))
+    private readonly mailService: MailService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -38,7 +43,11 @@ export class UserService {
     const newUser = new UserEntity();
     Object.assign(newUser, createUserDto);
 
-    return await this.userRepository.save(newUser);
+    const user = await this.userRepository.save(newUser);
+
+    await this.mailService.sendVerificationMessage(user.email);
+
+    return user;
   }
 
   async login(loginUserDto: LoginUserDto): Promise<UserEntity> {

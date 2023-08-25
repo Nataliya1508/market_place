@@ -2,18 +2,24 @@ import { VerificationTemplateContext } from '@app/mail/types/verificationTemplat
 import { VerificationTokenPayload } from '@app/mail/types/verificationTokenPayload.interface';
 import { MailerService } from '@app/mailer/mailer.service';
 import { UserService } from '@app/user/user.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import handlebars from 'handlebars';
-import jwt from 'jsonwebtoken';
-import path from 'path';
+import * as jwt from 'jsonwebtoken';
+import * as path from 'path';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailer: MailerService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 

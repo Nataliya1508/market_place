@@ -8,7 +8,7 @@ export class MailController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('verify-email')
-  async confirm(@Query() dto: VerifyEmailDto) {
+  async verify(@Query() dto: VerifyEmailDto) {
     const email = await this.mailService.decodeToken(dto.token);
 
     await this.mailService.verifyEmail(email);

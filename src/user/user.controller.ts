@@ -16,22 +16,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   @ApiOperation({ summary: 'Create user' })
   // @ApiTags('User')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        user: {
-          type: 'object',
-          properties: {
-            name: { example: 'Nataly', description: 'userName' },
-            email: { example: 'test1@gmail.com', description: 'email' },
-            password: { example: 'N3456g5tjnfd', description: 'password' },
-            phoneNumber: { example: '0990973689', description: 'phoneNumber' },
-          },
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreateUserDto })
   @ApiResponse({ status: 201, type: UserEntity })
   @Post()
   async createUser(

@@ -1,4 +1,4 @@
-import { MailService } from '@app/mail/mail.service';
+import { AuthService } from '@app/auth/auth.service';
 import { UserResponseInterface } from '@app/types/userResponse.interface';
 import {
   forwardRef,
@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/createUser.dto';
 import { LoginUserDto } from './dto/login.dto';
@@ -25,8 +25,8 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService,
-    @Inject(forwardRef(() => MailService))
-    private readonly mailService: MailService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -45,7 +45,7 @@ export class UserService {
 
     const user = await this.userRepository.save(newUser);
 
-    await this.mailService.sendVerificationMessage(user.email);
+    await this.authService.sendVerificationMessage(user.email);
 
     return user;
   }
@@ -105,6 +105,18 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
+  async update(
+    id: number,
+    payload: DeepPartial<UserEntity>,
+  ): Promise<UserEntity> {
+    return this.userRepository.save(
+      this.userRepository.create({
+        id,
+        ...payload,
+      }),
+    );
+  }
+
   generateJwt(user: UserEntity): string {
     const jwtSecret = this.configService.get<string>('JWT_SECRET');
 
@@ -122,32 +134,14 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException(`User with this ${email} does not exist`);
+      throw new NotFoundException(`User with email ${email} does not exist`);
     }
 
     return user;
   }
 
-  public async verifyEmail(email: string): Promise<void> {
+  public async markEmailVerified(email: string): Promise<void> {
     await this.userRepository.update({ email }, { emailVerified: true });
-  }
-
-  public async forgotPassword(email: string): Promise<void> {
-    const user = await this.findOneByEmail(email);
-
-    await this.mailService.sendForgotPasswordMessage(user.email);
-  }
-
-  public async resetPassword(token: string, password: string): Promise<void> {
-    const email = await this.mailService.decodeResetPasswordToken(token);
-    const user = await this.findOneByEmail(email);
-
-    const toSaveUser = await this.userRepository.create({
-      ...user,
-      password,
-    });
-
-    await this.userRepository.save(toSaveUser);
   }
 
   buildUserResponse(user: UserEntity): UserResponseInterface {

@@ -1,18 +1,10 @@
-import { ForgotPasswordTokenPayload } from '@app/mail/types/forgotPasswordTokenPayload.interface';
+import { MailData } from '@app/mail/types/mailData.interface';
 import { VerificationTemplateContext } from '@app/mail/types/verificationTemplateContext.interface';
-import { VerificationTokenPayload } from '@app/mail/types/verificationTokenPayload.interface';
 import { MailerService } from '@app/mailer/mailer.service';
-import { UserService } from '@app/user/user.service';
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import handlebars from 'handlebars';
-import * as jwt from 'jsonwebtoken';
 import * as path from 'path';
 
 @Injectable()
@@ -20,49 +12,38 @@ export class MailService {
   constructor(
     private readonly mailer: MailerService,
     private readonly configService: ConfigService,
-    @Inject(forwardRef(() => UserService))
-    private readonly userService: UserService,
   ) {}
 
-  public async sendVerificationMessage(email: string): Promise<void> {
-    const payload: VerificationTokenPayload = { email };
-    const secret = this.configService.get<string>('JWT_VERIFICATION_SECRET');
-    const expiresIn = this.configService.get<string>(
-      'JWT_VERIFICATION_EXPIRATION',
-    );
-    const token = jwt.sign(payload, secret, { expiresIn });
-
+  public async sendVerificationLetter(
+    mailData: MailData<{ token: string }>,
+  ): Promise<void> {
+    const verificationLink = this.getVerificationLink(mailData.data.token);
     const letter = await this.createLetter<VerificationTemplateContext>(
       'email-confirmation',
-      {
-        url: this.getVerificationLink(token),
-      },
+      { url: verificationLink },
     );
 
-    const subject = 'Email confirmation';
-
-    return await this.mailer.sendMail({ to: email, subject, html: letter });
+    return await this.mailer.sendMail({
+      to: mailData.to,
+      subject: 'Email confirmation',
+      html: letter,
+    });
   }
 
-  public async sendForgotPasswordMessage(email: string): Promise<void> {
-    const payload: ForgotPasswordTokenPayload = { email };
-    const secret = this.configService.get<string>('JWT_RESET_PASSWORD_SECRET');
-
-    const expiresIn = this.configService.get<string>(
-      'JWT_RESET_PASSWORD_EXPIRATION',
-    );
-    const token = jwt.sign(payload, secret, { expiresIn });
-
+  public async sendForgotPasswordLetter(
+    mailData: MailData<{ token: string }>,
+  ): Promise<void> {
+    const resetLink = this.getResetPasswordLink(mailData.data.token);
     const letter = await this.createLetter<VerificationTemplateContext>(
       'reset-password',
-      {
-        url: this.getResetPasswordLink(token),
-      },
+      { url: resetLink },
     );
 
-    const subject = 'Password reset';
-
-    return await this.mailer.sendMail({ to: email, subject, html: letter });
+    return await this.mailer.sendMail({
+      to: mailData.to,
+      subject: 'Password reset',
+      html: letter,
+    });
   }
 
   private async createLetter<T>(
@@ -86,54 +67,5 @@ export class MailService {
 
   private getResetPasswordLink(token: string): string {
     return `${this.configService.get('RESET_PASSWORD_URL')}?token=${token}`;
-  }
-
-  public async verifyEmail(email: string): Promise<void> {
-    const user = await this.userService.findOneByEmail(email);
-
-    if (user.emailVerified) {
-      throw new BadRequestException('Email is already confirmed');
-    }
-
-    await this.userService.verifyEmail(email);
-  }
-
-  public async decodeVerificationToken(token: string): Promise<string> {
-    try {
-      const secret = this.configService.get('JWT_VERIFICATION_SECRET');
-
-      const payload = await jwt.verify(token, secret);
-
-      if (typeof payload === 'object' && 'email' in payload) {
-        return payload.email;
-      }
-
-      throw new BadRequestException();
-    } catch (error) {
-      if (error?.name === 'TokenExpiredError') {
-        throw new BadRequestException('Email verification token expired');
-      }
-
-      throw new BadRequestException('Bad verification token');
-    }
-  }
-
-  public async decodeResetPasswordToken(token: string): Promise<string> {
-    try {
-      const secret = this.configService.get('JWT_RESET_PASSWORD_SECRET');
-      const payload = await jwt.verify(token, secret);
-
-      if (typeof payload === 'object' && 'email' in payload) {
-        return payload.email;
-      }
-
-      throw new BadRequestException();
-    } catch (error) {
-      if (error?.name === 'TokenExpiredError') {
-        throw new BadRequestException('Password-reset token has expired');
-      }
-
-      throw new BadRequestException('Bad password-reset token');
-    }
   }
 }

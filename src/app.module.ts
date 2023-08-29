@@ -8,6 +8,7 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 import { UserModule } from './user/user.module';
@@ -43,6 +44,7 @@ import { UserModule } from './user/user.module';
     SalerModule,
     MailModule,
     MailerModule,
+    AuthModule,
   ],
   controllers: [UserController],
   providers: [UserService],

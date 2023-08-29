@@ -7,7 +7,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
@@ -67,12 +66,6 @@ export class AuthService {
   }
 
   public async forgotPassword(email: string): Promise<void> {
-    const user = await this.userService.findOneByEmail(email);
-
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} does not exist`);
-    }
-
     const payload: ForgotPasswordTokenPayload = { email };
     const secret = this.configService.get<string>('JWT_RESET_PASSWORD_SECRET');
 
@@ -106,10 +99,10 @@ export class AuthService {
       throw new BadRequestException();
     } catch (error) {
       if (error?.name === 'TokenExpiredError') {
-        throw new BadRequestException('Password-reset token has expired');
+        throw new BadRequestException('Password reset token has expired');
       }
 
-      throw new BadRequestException('Bad password-reset token');
+      throw new BadRequestException('Bad password reset token');
     }
   }
 }

@@ -12,7 +12,7 @@ export class SalerEntity {
   @Column()
   phoneNumber: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   email: string;
 
   @Column({ default: '' })

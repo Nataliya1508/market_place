@@ -1,6 +1,6 @@
 import { IsEmail, MinLength } from 'class-validator';
 
-export class UpdateUserDto {
+export class UpdateBuyerDto {
   readonly name: string;
   @IsEmail()
   readonly email: string;

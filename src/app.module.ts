@@ -1,14 +1,14 @@
 import { SalerEntity } from '@app/saler/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
-import { UserController } from '@app/user/user.controller';
-import { UserEntity } from '@app/user/user.entity';
-import { UserService } from '@app/user/user.service';
+import { BuyerController } from '@app/buyer/buyer.controller';
+import { BuyerEntity } from '@app/buyer/buyer.entity';
+import { BuyerService } from '@app/buyer/buyer.service';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { UserModule } from './user/user.module';
+import { BuyerModule } from './buyer/buyer.module';
 
 @Module({
   imports: [
@@ -39,12 +39,12 @@ import { UserModule } from './user/user.module';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntity, SalerEntity]),
-    UserModule,
+    TypeOrmModule.forFeature([BuyerEntity, SalerEntity]),
+    BuyerModule,
     SalerModule,
   ],
-  controllers: [UserController],
-  providers: [UserService],
+  controllers: [BuyerController],
+  providers: [BuyerService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

@@ -132,6 +132,24 @@ export class UserService {
     await this.userRepository.update({ email }, { emailVerified: true });
   }
 
+  public async forgotPassword(email: string): Promise<void> {
+    const user = await this.findOneByEmail(email);
+
+    await this.mailService.sendForgotPasswordMessage(user.email);
+  }
+
+  public async resetPassword(token: string, password: string): Promise<void> {
+    const email = await this.mailService.decodeResetPasswordToken(token);
+    const user = await this.findOneByEmail(email);
+
+    const toSaveUser = await this.userRepository.create({
+      ...user,
+      password,
+    });
+
+    await this.userRepository.save(toSaveUser);
+  }
+
   buildUserResponse(user: UserEntity): UserResponseInterface {
     return {
       user: {

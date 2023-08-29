@@ -1,3 +1,4 @@
+import { ForgotPasswordTokenPayload } from '@app/mail/types/forgotPasswordTokenPayload.interface';
 import { VerificationTemplateContext } from '@app/mail/types/verificationTemplateContext.interface';
 import { VerificationTokenPayload } from '@app/mail/types/verificationTokenPayload.interface';
 import { MailerService } from '@app/mailer/mailer.service';
@@ -43,6 +44,27 @@ export class MailService {
     return await this.mailer.sendMail({ to: email, subject, html: letter });
   }
 
+  public async sendForgotPasswordMessage(email: string): Promise<void> {
+    const payload: ForgotPasswordTokenPayload = { email };
+    const secret = this.configService.get<string>('JWT_RESET_PASSWORD_SECRET');
+
+    const expiresIn = this.configService.get<string>(
+      'JWT_RESET_PASSWORD_EXPIRATION',
+    );
+    const token = jwt.sign(payload, secret, { expiresIn });
+
+    const letter = await this.createLetter<VerificationTemplateContext>(
+      'reset-password',
+      {
+        url: this.getResetPasswordLink(token),
+      },
+    );
+
+    const subject = 'Password reset';
+
+    return await this.mailer.sendMail({ to: email, subject, html: letter });
+  }
+
   private async createLetter<T>(
     templateFileName: string,
     context: T,
@@ -62,6 +84,10 @@ export class MailService {
     return `${this.configService.get('EMAIL_VERIFICATION_URL')}?token=${token}`;
   }
 
+  private getResetPasswordLink(token: string): string {
+    return `${this.configService.get('RESET_PASSWORD_URL')}?token=${token}`;
+  }
+
   public async verifyEmail(email: string): Promise<void> {
     const user = await this.userService.findOneByEmail(email);
 
@@ -72,7 +98,7 @@ export class MailService {
     await this.userService.verifyEmail(email);
   }
 
-  public async decodeToken(token: string): Promise<string> {
+  public async decodeVerificationToken(token: string): Promise<string> {
     try {
       const secret = this.configService.get('JWT_VERIFICATION_SECRET');
 
@@ -89,6 +115,25 @@ export class MailService {
       }
 
       throw new BadRequestException('Bad verification token');
+    }
+  }
+
+  public async decodeResetPasswordToken(token: string): Promise<string> {
+    try {
+      const secret = this.configService.get('JWT_RESET_PASSWORD_SECRET');
+      const payload = await jwt.verify(token, secret);
+
+      if (typeof payload === 'object' && 'email' in payload) {
+        return payload.email;
+      }
+
+      throw new BadRequestException();
+    } catch (error) {
+      if (error?.name === 'TokenExpiredError') {
+        throw new BadRequestException('Password-reset token has expired');
+      }
+
+      throw new BadRequestException('Bad password-reset token');
     }
   }
 }

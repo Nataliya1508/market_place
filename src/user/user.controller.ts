@@ -1,6 +1,7 @@
 import { UserResponseInterface } from '@app/types/userResponse.interface';
+import { ResetPasswordDto } from '@app/user/dto/resetPassword.dto';
 import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBody,ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { User } from './decorators/user.decorator';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -78,6 +79,17 @@ export class UserController {
     );
 
     return this.userService.buildUserResponse(user);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@User('email') email: string): Promise<void> {
+    await this.userService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
+    const { token, password } = dto;
+    await this.userService.resetPassword(token, password);
   }
 }
 // function ApiTags(arg0: string) {

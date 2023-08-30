@@ -8,8 +8,8 @@ import { Repository } from 'typeorm';
 
 import { CreateUserDto } from '../user/dto/createUser.dto';
 import { LoginUserDto } from '../user/dto/login.dto';
-import { UpdateBuyerDto } from './dto/updateUser.dto';
 import { BuyerEntity } from './buyer.entity';
+import { UpdateBuyerDto } from './dto/updateUser.dto';
 
 @Injectable()
 export class BuyerService {
@@ -23,10 +23,13 @@ export class BuyerService {
     const buyerByEmail = await this.buyerRepository.findOne({
       where: { email: createUserDto.email },
     });
+    const buyerByPhoneNumber = await this.buyerRepository.findOne({
+      where: { phoneNumber: createUserDto.phoneNumber },
+    });
 
-    if (buyerByEmail) {
+    if (buyerByEmail || buyerByPhoneNumber) {
       throw new HttpException(
-        'Email is already in use ',
+        'Email or Phone number is already in use ',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }

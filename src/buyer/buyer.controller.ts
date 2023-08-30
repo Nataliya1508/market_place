@@ -11,10 +11,10 @@ import {
 import { User } from '../user/decorators/user.decorator';
 import { CreateUserDto } from '../user/dto/createUser.dto';
 import { LoginUserDto } from '../user/dto/login.dto';
-import { UpdateBuyerDto } from './dto/updateUser.dto';
 import { AuthGuard } from '../user/guards/auth.guard';
-import { BuyerService } from './buyer.service';
 import { BuyerEntity } from './buyer.entity';
+import { BuyerService } from './buyer.service';
+import { UpdateBuyerDto } from './dto/updateUser.dto';
 
 @Controller('buyers')
 @ApiTags('Buyers')

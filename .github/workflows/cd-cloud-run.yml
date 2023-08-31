@@ -10,7 +10,7 @@ env:
   PROJECT_ID: "${{ secrets.CLOUD_RUN_PROJECT_NAME }}"
   REGION: europe-north1
   # project-name but it can be anything you want
-  REPO_NAME: marketplace
+  REPO_NAME: test-nest-deploy
 
 jobs:
   build-and-deploy:

@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { hash } from 'bcrypt';
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 enum Role {
   Seller = 'seller',
@@ -62,6 +68,7 @@ export class BuyerEntity {
   isActive: boolean;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     this.password = await hash(this.password, 10);
   }

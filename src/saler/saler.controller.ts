@@ -8,14 +8,19 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { SalerEntity } from './saler.entity';
 // import { CreateSalerDto } from './dto/createSaler.dto';
 import { SalerService } from './saler.service';
 
 @Controller('salers')
+@ApiTags('Salers')
 export class SalerController {
   constructor(private readonly salerService: SalerService) {}
+  @ApiOperation({ summary: 'Create user' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, type: SalerEntity })
   @Post('saler')
   @UsePipes(new ValidationPipe())
   async createSaller(

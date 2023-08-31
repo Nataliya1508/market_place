@@ -21,10 +21,13 @@ export class SalerService {
     const salerByEmail = await this.salerRepository.findOne({
       where: { email: createSalerDto.email },
     });
+    const buyerByPhoneNumber = await this.salerRepository.findOne({
+      where: { phoneNumber: createSalerDto.phoneNumber },
+    });
 
-    if (salerByEmail) {
+    if (salerByEmail || buyerByPhoneNumber) {
       throw new HttpException(
-        'Email is already in use ',
+        'Email or Phone number is already in use ',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }

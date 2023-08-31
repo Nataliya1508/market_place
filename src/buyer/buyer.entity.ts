@@ -14,13 +14,13 @@ enum Role {
   Admin = 'admin',
 }
 
-@Entity({ name: 'users' })
-export class UserEntity {
+@Entity({ name: 'buyers' })
+export class BuyerEntity {
   @ApiProperty({ example: '1', description: 'id' })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: 'Nataly', description: 'userName' })
+  @ApiProperty({ example: 'Nataly', description: 'buyerName' })
   @Column()
   name: string;
 
@@ -36,7 +36,7 @@ export class UserEntity {
   @Column({ default: '' })
   image: string;
 
-  @ApiProperty({ example: 'user', description: 'user roles' })
+  @ApiProperty({ example: 'buyer', description: 'user roles' })
   @Column({ type: 'enum', enum: Role, default: Role.Buyer })
   role: Role;
 
@@ -52,7 +52,7 @@ export class UserEntity {
     example: 'Petra Hrygorenko, 23',
     description: 'delivery address',
   })
-  @Column({ nullable: true })
+  @Column({ default: '' })
   address: string;
 
   @ApiProperty({ example: 'N3456g5tjnfd', description: 'password' })

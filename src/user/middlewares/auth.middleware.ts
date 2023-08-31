@@ -4,13 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 
-import { UserService } from '../user.service';
+import { BuyerService } from '../../buyer/buyer.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   constructor(
     private readonly configService: ConfigService,
-    private readonly userService: UserService,
+    private readonly userService: BuyerService,
   ) {}
   async use(req: ExpressRequestInterfase, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {

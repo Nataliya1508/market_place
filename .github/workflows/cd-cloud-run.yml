@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
+      - feat/docker
 
 env:
-  PROJECT_ID: ${{ secrets.CLOUD_RUN_PROJECT_NAME }}
+  PROJECT_ID: $secrets.CLOUD_RUN_PROJECT_NAME
   REGION: europe-north1
   # project-name but it can be anything you want
   REPO_NAME: market_place
@@ -23,7 +24,7 @@ jobs:
       - id: "auth"
         uses: "google-github-actions/auth@v0"
         with:
-          credentials_json: "${{ secrets.CLOUD_RUN_SERVICE_ACCOUNT }}"
+          credentials_json: $secrets.CLOUD_RUN_SERVICE_ACCOUNT
 
       # Setup gcloud CLI/SDK
       - name: Set up Cloud SDK

@@ -1,10 +1,9 @@
+import { BuyerService } from '@app/buyer/buyer.service';
 import { ExpressRequestInterfase } from '@app/types/expressRequest.interface';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
-
-import { BuyerService } from '../../buyer/buyer.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {

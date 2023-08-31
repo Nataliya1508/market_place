@@ -1,6 +1,6 @@
-import { UserEntity } from '@app/user/user.entity';
+import { BuyerEntity } from '@app/buyer/buyer.entity';
 import { Request } from 'express';
 
 export interface ExpressRequestInterfase extends Request {
-  user?: UserEntity;
+  user?: BuyerEntity;
 }

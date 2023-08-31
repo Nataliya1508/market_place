@@ -1,7 +1,7 @@
 import { ForgotPasswordTokenPayload } from '@app/auth/types/forgotPasswordTokenPayload.interface';
 import { VerificationTokenPayload } from '@app/auth/types/verificationTokenPayload.interface';
+import { BuyerService } from '@app/buyer/buyer.service';
 import { MailService } from '@app/mail/mail.service';
-import { UserService } from '@app/user/user.service';
 import {
   BadRequestException,
   forwardRef,
@@ -14,10 +14,10 @@ import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(forwardRef(() => UserService))
-    private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => BuyerService))
+    private readonly buyerService: BuyerService,
   ) {}
 
   public async sendVerificationMessage(email: string): Promise<void> {
@@ -36,13 +36,13 @@ export class AuthService {
 
   public async verifyEmail(token: string): Promise<void> {
     const email = await this.decodeVerificationToken(token);
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.buyerService.findOneByEmail(email);
 
     if (user.emailVerified) {
       throw new BadRequestException('Email is already confirmed');
     }
 
-    await this.userService.markEmailVerified(email);
+    await this.buyerService.markEmailVerified(email);
   }
 
   private async decodeVerificationToken(token: string): Promise<string> {
@@ -82,9 +82,9 @@ export class AuthService {
 
   public async resetPassword(token: string, password: string): Promise<void> {
     const email = await this.decodeResetPasswordToken(token);
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.buyerService.findOneByEmail(email);
 
-    await this.userService.update(user.id, { password });
+    await this.buyerService.update(user.id, { password });
   }
 
   private async decodeResetPasswordToken(token: string): Promise<string> {

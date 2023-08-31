@@ -1,10 +1,18 @@
+import { AuthService } from '@app/auth/auth.service';
 import { BuyerResponseInterface } from '@app/types/userResponse.interface';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 
 import { CreateUserDto } from '../user/dto/createUser.dto';
 import { LoginUserDto } from '../user/dto/login.dto';
@@ -17,6 +25,8 @@ export class BuyerService {
     @InjectRepository(BuyerEntity)
     private readonly buyerRepository: Repository<BuyerEntity>,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   async createBuyer(createUserDto: CreateUserDto): Promise<BuyerEntity> {
@@ -37,7 +47,11 @@ export class BuyerService {
     Object.assign(newBuyer, createUserDto);
     console.log('newUser', newBuyer);
 
-    return await this.buyerRepository.save(newBuyer);
+    const buyer = await this.buyerRepository.save(newBuyer);
+
+    await this.authService.sendVerificationMessage(buyer.email);
+
+    return buyer;
   }
 
   async login(loginUserDto: LoginUserDto): Promise<BuyerEntity> {
@@ -95,6 +109,15 @@ export class BuyerService {
     return await this.buyerRepository.save(buyer);
   }
 
+  public async update(
+    id: number,
+    payload: DeepPartial<BuyerEntity>,
+  ): Promise<BuyerEntity> {
+    return this.buyerRepository.save(
+      this.buyerRepository.create({ id, ...payload }),
+    );
+  }
+
   generateJwt(buyer: BuyerEntity): string {
     const jwtSecret = this.configService.get<string>('JWT_SECRET');
 
@@ -106,6 +129,20 @@ export class BuyerService {
       },
       jwtSecret,
     );
+  }
+
+  public async findOneByEmail(email: string): Promise<BuyerEntity> {
+    const user = await this.buyerRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} does not exist`);
+    }
+
+    return user;
+  }
+
+  public async markEmailVerified(email: string): Promise<void> {
+    await this.buyerRepository.update({ email }, { emailVerified: true });
   }
 
   buildBuyerResponse(buyer: BuyerEntity): BuyerResponseInterface {

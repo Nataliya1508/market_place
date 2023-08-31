@@ -1,15 +1,15 @@
-import { SalerEntity } from '@app/saler/saler.entity';
-import { SalerModule } from '@app/saler/saler.module';
-import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { BuyerController } from '@app/buyer/buyer.controller';
 import { BuyerEntity } from '@app/buyer/buyer.entity';
 import { BuyerService } from '@app/buyer/buyer.service';
+import { SalerEntity } from '@app/saler/saler.entity';
+import { SalerModule } from '@app/saler/saler.module';
+import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { BuyerModule } from './buyer/buyer.module';
 import { AuthModule } from './auth/auth.module';
+import { BuyerModule } from './buyer/buyer.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 

@@ -6,7 +6,7 @@ export class UpdateBuyerDto {
   readonly email: string;
   @MinLength(6)
   readonly password: string;
-  readonly phoneNumber: number;
+  readonly phoneNumber: string;
   readonly image: string;
   readonly address: string;
 }

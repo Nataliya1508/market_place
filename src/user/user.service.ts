@@ -1,7 +1,6 @@
 import { UserEntity } from '@app/user/entities/user.entity';
 import { CreateUser } from '@app/user/types/createUser.type';
 import { EntityCondition } from '@app/utils/types/entityCondition.type';
-import { NullableType } from '@app/utils/types/nullableType.type';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
@@ -19,7 +18,7 @@ export class UserService {
 
   public async findOne(
     options: EntityCondition<UserEntity>,
-  ): Promise<NullableType<UserEntity>> {
+  ): Promise<UserEntity> {
     return await this.userRepository.findOne({ where: options });
   }
 

@@ -22,7 +22,6 @@ export class BuyerEntity {
   @Column('varchar')
   lastName: string;
 
-  // FIXME: consider using a string type
   @ApiProperty({ example: '+3809905005050', description: 'phoneNumber' })
   @Column({ unique: true })
   phoneNumber: string;

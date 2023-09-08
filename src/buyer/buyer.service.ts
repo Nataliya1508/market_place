@@ -1,6 +1,4 @@
-import { Buyer } from '@app/buyer/types/buyer.type';
 import { CreateBuyer } from '@app/buyer/types/createBuyer.type';
-import { UserEntity } from '@app/user/entities/user.entity';
 import { UserService } from '@app/user/user.service';
 import { EntityCondition } from '@app/utils/types/entityCondition.type';
 import { Injectable } from '@nestjs/common';
@@ -19,7 +17,7 @@ export class BuyerService {
     private readonly userService: UserService,
   ) {}
 
-  public async create(data: CreateBuyer): Promise<Buyer> {
+  public async create(data: CreateBuyer): Promise<BuyerEntity> {
     const { email, password, ...buyerData } = data;
 
     const user = await this.userService.create({ email, password });
@@ -32,55 +30,13 @@ export class BuyerService {
   }
 
   public async findOne(
-    options: EntityCondition<UserEntity & BuyerEntity>,
-  ): Promise<Buyer | undefined> {
+    options: EntityCondition<BuyerEntity>,
+  ): Promise<BuyerEntity | null> {
     const queryBuilder = this.buyerRepository
       .createQueryBuilder('buyer')
-      .innerJoinAndSelect('buyer.user', 'user');
+      .innerJoinAndSelect('buyer.user', 'user')
+      .where(options);
 
-    for (const [field, value] of Object.entries(options)) {
-      const entityAlias = this.getEntityAlias(field);
-      queryBuilder.andWhere(`${entityAlias}.${field} = :value`, { value });
-    }
-
-    const buyer = await queryBuilder.getOne();
-
-    if (!buyer) {
-      return undefined;
-    }
-
-    const transformedData = {
-      id: buyer.user.id,
-      email: buyer.user.email,
-      role: buyer.user.role,
-      password: buyer.user.password,
-      emailVerified: buyer.user.emailVerified,
-      name: buyer.name,
-      lastName: buyer.lastName,
-      phoneNumber: buyer.phoneNumber,
-      isActive: buyer.isActive,
-    };
-
-    return transformedData;
-  }
-
-  private getEntityAlias(field: string): string | undefined {
-    const userEntityFields = ['email', 'password', 'role', 'emailVerified'];
-
-    const buyerEntityFields = [
-      'id',
-      'name',
-      'lastName',
-      'phoneNumber',
-      'isActive',
-    ];
-
-    if (userEntityFields.includes(field)) {
-      return 'user';
-    }
-
-    if (buyerEntityFields.includes(field)) {
-      return 'buyer';
-    }
+    return await queryBuilder.getOne();
   }
 }

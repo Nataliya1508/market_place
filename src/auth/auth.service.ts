@@ -9,13 +9,13 @@ import { PhoneNumberAlreadyExistsException } from '@app/auth/exceptions/PhoneNum
 import { ForgotPasswordTokenPayload } from '@app/auth/types/forgotPasswordTokenPayload.interface';
 import { JwtPayload } from '@app/auth/types/jwtPayload.type';
 import { VerificationTokenPayload } from '@app/auth/types/verificationTokenPayload.interface';
+import { BuyerEntity } from '@app/buyer/buyer.entity';
 import { BuyerService } from '@app/buyer/buyer.service';
-import { Buyer } from '@app/buyer/types/buyer.type';
 import { MailService } from '@app/mail/mail.service';
+import { CompanyEntity } from '@app/saler/entities/company.entity';
+import { IndividualEntity } from '@app/saler/entities/individual.entity';
 import { SellerService } from '@app/saler/seller.service';
-import { CompanySeller, IndividualSeller } from '@app/saler/types/seller.type';
-import { UserResponseInterface } from '@app/types/userResponse.interface';
-import { User } from '@app/user/types/user.type';
+import { UserRole } from '@app/user/enums/userRole.enum';
 import { UserService } from '@app/user/user.service';
 import {
   BadRequestException,
@@ -26,7 +26,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { compare } from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +39,7 @@ export class AuthService {
 
   public async registerBuyer(
     dto: BuyerRegisterDto,
-  ): Promise<UserResponseInterface<Buyer>> {
+  ): Promise<BuyerEntity & { token: string }> {
     const { email, phoneNumber } = dto;
 
     const user = await this.userService.findOne({ email });
@@ -57,43 +56,74 @@ export class AuthService {
 
     const newBuyer = await this.buyerService.create(dto);
 
-    await this.sendVerificationMessage(newBuyer.email);
+    await this.sendVerificationMessage(email);
 
-    return { ...newBuyer, token: this.generateJwt(newBuyer) };
+    return {
+      ...newBuyer,
+      token: this.generateJwt({
+        id: newBuyer.id,
+        email: newBuyer.user.email,
+        role: newBuyer.user.role,
+      }),
+    };
   }
 
-  async login(dto: UserLoginDto): Promise<UserResponseInterface<User>> {
-    const user = await this.userService.findOne({
-      email: dto.email,
-    });
+  async login(dto: UserLoginDto): Promise<
+    (BuyerEntity | IndividualEntity | CompanyEntity) & {
+      token: string;
+      role: string;
+    }
+  > {
+    const { email, password } = dto;
+
+    const user = await this.userService.findOne({ email });
 
     if (!user) {
-      throw new HttpException(
-        'Invalid email or password',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Invalid email provided', HttpStatus.BAD_REQUEST);
     }
 
-    const isPasswordCorrect = await compare(dto.password, user.password);
+    const isPasswordCorrect = await compare(password, user.password);
 
     if (!isPasswordCorrect) {
       throw new HttpException(
-        'Invalid email or password',
+        'Invalid password provided',
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    delete user.password;
+    const { role, id } = user;
+
+    let userData;
+
+    if (role === UserRole.Buyer) {
+      userData = await this.buyerService.findOne({ user: { id } });
+    } else if (role === UserRole.SellerIndividual) {
+      userData = await this.sellerService.findOneIndividual({
+        seller: { user: { id } },
+      });
+    } else if (role === UserRole.SellerCompany) {
+      userData = await this.sellerService.findOneCompany({
+        seller: { user: { id } },
+      });
+    }
+
+    if (!userData) {
+      throw new HttpException(
+        'User not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
 
     return {
-      ...user,
+      ...userData,
       token: this.generateJwt(user),
-    } as UserResponseInterface<User>;
+      role,
+    };
   }
 
   public async registerSellerIndividual(
     dto: SellerIndividualRegisterDto,
-  ): Promise<UserResponseInterface<IndividualSeller>> {
+  ): Promise<IndividualEntity & { token: string }> {
     const { email, phoneNumber } = dto;
 
     const user = await this.userService.findOne({ email });
@@ -110,14 +140,21 @@ export class AuthService {
 
     const newSeller = await this.sellerService.createIndividual(dto);
 
-    await this.sendVerificationMessage(newSeller.email);
+    await this.sendVerificationMessage(email);
 
-    return { ...newSeller, token: this.generateJwt(newSeller) };
+    return {
+      ...newSeller,
+      token: this.generateJwt({
+        id: newSeller.id,
+        email,
+        role: newSeller.seller.user.role,
+      }),
+    };
   }
 
   public async registerSellerCompany(
     dto: SellerCompanyRegisterDto,
-  ): Promise<UserResponseInterface<CompanySeller>> {
+  ): Promise<CompanyEntity & { token: string }> {
     const { email, phoneNumber } = dto;
 
     const user = await this.userService.findOne({ email });
@@ -134,18 +171,22 @@ export class AuthService {
 
     const newSeller = await this.sellerService.createCompany(dto);
 
-    await this.sendVerificationMessage(newSeller.email);
+    await this.sendVerificationMessage(email);
 
     return {
       ...newSeller,
-      token: this.generateJwt(newSeller),
+      token: this.generateJwt({
+        id: newSeller.id,
+        email,
+        role: newSeller.seller.user.role,
+      }),
     };
   }
 
   private generateJwt(user: JwtPayload): string {
     const jwtSecret = this.configService.get<string>('JWT_SECRET');
 
-    return sign(
+    return jwt.sign(
       {
         id: user.id,
         email: user.email,

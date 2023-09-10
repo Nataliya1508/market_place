@@ -39,11 +39,6 @@ export class BuyerService {
   public async findOne(
     options: EntityCondition<BuyerEntity>,
   ): Promise<BuyerEntity | null> {
-    const queryBuilder = this.buyerRepository
-      .createQueryBuilder('buyer')
-      .innerJoinAndSelect('buyer.user', 'user')
-      .where(options);
-
-    return await queryBuilder.getOne();
+    return await this.buyerRepository.findOne({ where: options });
   }
 }

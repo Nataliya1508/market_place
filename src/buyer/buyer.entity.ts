@@ -30,7 +30,10 @@ export class BuyerEntity {
   @Column({ default: false })
   isActive: boolean;
 
-  @OneToOne(() => UserEntity, (user) => user.id, { eager: true })
+  @OneToOne(() => UserEntity, (user) => user.id, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   user: UserEntity;
 }

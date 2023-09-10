@@ -33,7 +33,10 @@ export class IndividualEntity {
   @Column('varchar')
   bankCardExpirationDate: string;
 
-  @OneToOne(() => SellerEntity, (seller) => seller.id)
+  @OneToOne(() => SellerEntity, (seller) => seller.id, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   seller: SellerEntity;
 }

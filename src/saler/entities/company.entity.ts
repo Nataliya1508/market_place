@@ -45,7 +45,10 @@ export class CompanyEntity {
   @Column('varchar', { nullable: true })
   edrpou: string | null;
 
-  @OneToOne(() => SellerEntity, (seller) => seller.id)
+  @OneToOne(() => SellerEntity, (seller) => seller.id, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   seller: SellerEntity;
 }

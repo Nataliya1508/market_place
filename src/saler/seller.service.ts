@@ -68,13 +68,7 @@ export class SellerService {
   public async findOneIndividual(
     options: EntityCondition<IndividualEntity>,
   ): Promise<IndividualEntity | null> {
-    const queryBuilder = this.individualRepository
-      .createQueryBuilder('individual')
-      .innerJoinAndSelect('individual.seller', 'seller')
-      .innerJoinAndSelect('seller.user', 'user')
-      .where(options);
-
-    return await queryBuilder.getOne();
+    return await this.individualRepository.findOne({ where: options });
   }
 
   public async createCompany(
@@ -117,13 +111,7 @@ export class SellerService {
   public async findOneCompany(
     options: EntityCondition<UserEntity & SellerEntity & CompanyEntity>,
   ): Promise<CompanyEntity | null> {
-    const queryBuilder = this.companyRepository
-      .createQueryBuilder('company')
-      .innerJoinAndSelect('company.seller', 'seller')
-      .innerJoinAndSelect('seller.user', 'user')
-      .where(options);
-
-    return await queryBuilder.getOne();
+    return await this.companyRepository.findOne({ where: options });
   }
 
   private async createSeller(
@@ -143,11 +131,6 @@ export class SellerService {
   public async findOne(
     options: EntityCondition<UserEntity & SellerEntity>,
   ): Promise<SellerEntity | null> {
-    const queryBuilder = this.sellerRepository
-      .createQueryBuilder('seller')
-      .innerJoinAndSelect('seller.user', 'user')
-      .where(options);
-
-    return await queryBuilder.getOne();
+    return this.sellerRepository.findOne({ where: options });
   }
 }

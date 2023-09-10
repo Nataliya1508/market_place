@@ -1,8 +1,23 @@
 import { AuthService } from '@app/auth/auth.service';
+import { BuyerRegisterDto } from '@app/auth/dto/buyerRegister.dto';
 import { ResetPasswordDto } from '@app/auth/dto/resetPassword.dto';
+import {
+  SellerCompanyRegisterDto,
+  SellerIndividualRegisterDto,
+} from '@app/auth/dto/sellerRegister.dto';
+import { UserLoginDto } from '@app/auth/dto/userLogin.dto';
 import { VerifyEmailDto } from '@app/auth/dto/verifyEmail.dto';
+import { BuyerEntity } from '@app/buyer/buyer.entity';
+import { BuyerDto } from '@app/buyer/dto/buyer.dto';
 import { MailService } from '@app/mail/mail.service';
-import { User } from '@app/user/decorators/user.decorator';
+import {
+  SellerCompanyDto,
+  SellerIndividualDto,
+} from '@app/saler/dto/seller.dto';
+import { CompanyEntity } from '@app/saler/entities/company.entity';
+import { IndividualEntity } from '@app/saler/entities/individual.entity';
+import { User as CurrentUser } from '@app/user/decorators/user.decorator';
+import { UserRole } from '@app/user/enums/userRole.enum';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -13,6 +28,75 @@ export class AuthController {
     private readonly mailService: MailService,
     private readonly authService: AuthService,
   ) {}
+
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email address [email] is already in use',
+  })
+  @Post('/buyers/register')
+  async registerBuyer(@Body() dto: BuyerRegisterDto): Promise<void> {
+    await this.authService.registerBuyer(dto);
+  }
+
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email address [email] is already in use',
+  })
+  @Post('/sellers/individuals/register')
+  async registerSellerIndividual(
+    @Body() dto: SellerIndividualRegisterDto,
+  ): Promise<void> {
+    await this.authService.registerSellerIndividual(dto);
+  }
+
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email address [email] is already in use',
+  })
+  @Post('/sellers/companies/register')
+  async registerSellerCompany(
+    @Body() dto: SellerCompanyRegisterDto,
+  ): Promise<void> {
+    await this.authService.registerSellerCompany(dto);
+  }
+
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid password provided',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    description: 'User with role [role] and id [id] not found',
+  })
+  @Post('/login')
+  async login(
+    @Body() dto: UserLoginDto,
+  ): Promise<
+    (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string }
+  > {
+    const { role, ...userTypeEntity } = await this.authService.login(dto);
+
+    let userDto;
+
+    if (role === UserRole.Buyer) {
+      userDto = BuyerDto.from(userTypeEntity as BuyerEntity);
+    } else if (role === UserRole.SellerIndividual) {
+      userDto = SellerIndividualDto.from(userTypeEntity as IndividualEntity);
+    } else if (role === UserRole.SellerCompany) {
+      userDto = SellerCompanyDto.from(userTypeEntity as CompanyEntity);
+    }
+
+    return { ...userDto, token: userTypeEntity.token };
+  }
+
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -28,7 +112,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('forgot-password')
-  async forgotPassword(@User('email') email: string): Promise<void> {
+  async forgotPassword(@CurrentUser('email') email: string): Promise<void> {
     await this.authService.forgotPassword(email);
   }
 

@@ -1,3 +1,3 @@
-import { SalerEntity } from '@app/saler/saler.entity';
+import { SellerEntity } from '@app/saler/entities/saler.entity';
 
-export type SalerType = Omit<SalerEntity, 'hashPassword'>;
+export type SalerType = Omit<SellerEntity, 'hashPassword'>;

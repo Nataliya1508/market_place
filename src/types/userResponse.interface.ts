@@ -1,6 +1,4 @@
 import { UserType } from './user.type';
 
-export interface BuyerResponseInterface {
-  user: UserType & { token: string };
-}
+export type UserResponseInterface<T> = T & { token: string };
 export { UserType };

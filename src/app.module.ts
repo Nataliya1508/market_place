@@ -1,9 +1,9 @@
+import { AuthMiddleware } from '@app/auth/middlewares/auth.middleware';
 import { BuyerController } from '@app/buyer/buyer.controller';
 import { BuyerEntity } from '@app/buyer/buyer.entity';
 import { BuyerService } from '@app/buyer/buyer.service';
-import { SalerEntity } from '@app/saler/saler.entity';
+import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';
-import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { BuyerModule } from './buyer/buyer.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -39,12 +40,13 @@ import { MailerModule } from './mailer/mailer.module';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([BuyerEntity, SalerEntity]),
+    TypeOrmModule.forFeature([BuyerEntity, SellerEntity]),
     BuyerModule,
     SalerModule,
     MailModule,
     MailerModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [BuyerController],
   providers: [BuyerService],

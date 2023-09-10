@@ -1,3 +1,3 @@
-import { BuyerEntity } from '@app/buyer/buyer.entity';
+import { UserEntity } from '@app/user/entities/user.entity';
 
-export type UserType = Omit<BuyerEntity, 'hashPassword'>;
+export type UserType<T> = Omit<T & UserEntity, 'hashPassword'>;

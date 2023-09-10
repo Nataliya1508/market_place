@@ -84,8 +84,8 @@ export class SellerCompanyDto extends BaseSeller {
     companyDto.workingHours = company.workingHours;
     companyDto.iban = company.iban;
     companyDto.bankName = company.bankName;
-    companyDto.mfo = company.bankName;
-    companyDto.edrpou = company.bankName;
+    companyDto.mfo = company.mfo;
+    companyDto.edrpou = company.edrpou;
 
     const userDto = UserDto.from(company.seller.user);
 

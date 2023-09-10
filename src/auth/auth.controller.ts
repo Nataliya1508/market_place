@@ -18,15 +18,7 @@ import { CompanyEntity } from '@app/saler/entities/company.entity';
 import { IndividualEntity } from '@app/saler/entities/individual.entity';
 import { User as CurrentUser } from '@app/user/decorators/user.decorator';
 import { UserRole } from '@app/user/enums/userRole.enum';
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -37,12 +29,21 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email address [email] is already in use',
+  })
   @Post('/buyers/register')
   async registerBuyer(@Body() dto: BuyerRegisterDto): Promise<void> {
     await this.authService.registerBuyer(dto);
   }
 
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email address [email] is already in use',
+  })
   @Post('/sellers/individuals/register')
   async registerSellerIndividual(
     @Body() dto: SellerIndividualRegisterDto,
@@ -50,6 +51,11 @@ export class AuthController {
     await this.authService.registerSellerIndividual(dto);
   }
 
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email address [email] is already in use',
+  })
   @Post('/sellers/companies/register')
   async registerSellerCompany(
     @Body() dto: SellerCompanyRegisterDto,
@@ -57,6 +63,19 @@ export class AuthController {
     await this.authService.registerSellerCompany(dto);
   }
 
+  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid password provided',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    description: 'User with role [role] and id [id] not found',
+  })
   @Post('/login')
   async login(
     @Body() dto: UserLoginDto,

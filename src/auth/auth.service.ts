@@ -119,7 +119,9 @@ export class AuthService {
     }
 
     if (!userData) {
-      throw new UnprocessableEntityException('User not found');
+      throw new UnprocessableEntityException(
+        `User with role '${role}' and id '${id}' not found`,
+      );
     }
 
     return {

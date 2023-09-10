@@ -1,12 +1,5 @@
-import { UserRole } from '@app/user/enums/userRole.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  Matches,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 
 export class UserRegisterDto {
   @ApiProperty({ example: 'test1@gmail.com', description: 'email' })
@@ -22,8 +15,4 @@ export class UserRegisterDto {
       'Password must contain at least one uppercase letter, one lowercase letter, and one number',
   })
   readonly password: string;
-
-  @IsEnum(UserRole)
-  @IsNotEmpty()
-  readonly role: UserRole;
 }

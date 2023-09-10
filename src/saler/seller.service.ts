@@ -4,12 +4,13 @@ import { SellerEntity } from '@app/saler/entities/saler.entity';
 import {
   CreateCompanySeller,
   CreateIndividualSeller,
+  CreateSeller,
 } from '@app/saler/types/createSeller.type';
 import { UserEntity } from '@app/user/entities/user.entity';
 import { UserRole } from '@app/user/enums/userRole.enum';
 import { UserService } from '@app/user/user.service';
 import { EntityCondition } from '@app/utils/types/entityCondition.type';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,7 +32,8 @@ export class SellerService {
     data: CreateIndividualSeller,
   ): Promise<IndividualEntity | null> {
     const { email, password, ...sellerData } = data;
-    const { name, lastName, phoneNumber, ...individualData } = sellerData;
+    const { name, lastName, phoneNumber, isActive, ...individualData } =
+      sellerData;
 
     const user = await this.userService.create({
       email,
@@ -39,28 +41,28 @@ export class SellerService {
       role: UserRole.SellerIndividual,
     });
 
-    // FIXME: The following 3 steps should be executed as a transaction
-    const seller = await this.sellerRepository.save(
-      this.sellerRepository.create({
-        name,
-        lastName,
-        phoneNumber,
-        isActive: false,
-        user,
-      }),
+    // FIXME: The following steps should be executed as a transaction
+    const seller = await this.createSeller({
+      name,
+      lastName,
+      phoneNumber,
+      email,
+      password,
+      user,
+    });
+
+    const foundIndividual = await this.individualRepository.findOne({
+      where: { seller: { id: seller.id } },
+    });
+
+    // Updating individual's data if individual already exists
+    const individualToSave = foundIndividual
+      ? { id: foundIndividual.id, ...individualData }
+      : { ...individualData, seller };
+
+    return await this.individualRepository.save(
+      this.individualRepository.create(individualToSave),
     );
-
-    const individual = await this.individualRepository.save(
-      this.individualRepository.create({ ...individualData, seller }),
-    );
-
-    const createdSeller = await this.findOneIndividual({ id: individual.id });
-
-    if (!createdSeller) {
-      throw new UnprocessableEntityException('User has not been created');
-    }
-
-    return createdSeller;
   }
 
   public async findOneIndividual(
@@ -79,7 +81,8 @@ export class SellerService {
     data: CreateCompanySeller,
   ): Promise<CompanyEntity | null> {
     const { email, password, ...sellerData } = data;
-    const { name, lastName, phoneNumber, ...companyData } = sellerData;
+    const { name, lastName, phoneNumber, isActive, ...companyData } =
+      sellerData;
 
     const user = await this.userService.create({
       email,
@@ -87,26 +90,28 @@ export class SellerService {
       role: UserRole.SellerCompany,
     });
 
-    // FIXME: The following 3 steps should be executed as a transaction
-    const seller = await this.sellerRepository.save(
-      this.sellerRepository.create({
-        name,
-        lastName,
-        phoneNumber,
-        isActive: false,
-        user,
-      }),
-    );
+    // FIXME: The following steps should be executed as a transaction
+    const seller = await this.createSeller({
+      name,
+      lastName,
+      phoneNumber,
+      email,
+      password,
+      user,
+    });
 
-    const company = await this.companyRepository.save(
-      this.companyRepository.create({
-        ...companyData,
-        name: companyData.companyName,
-        seller,
-      } as unknown as CompanyEntity),
-    );
+    const foundCompany = await this.companyRepository.findOne({
+      where: { seller: { id: seller.id } },
+    });
 
-    return await this.findOneCompany({ id: company.id });
+    // Updating company's data if company already exists
+    const companyToSave = foundCompany
+      ? { id: foundCompany.id, ...companyData, name: companyData.companyName }
+      : { ...companyData, name: companyData.companyName, seller };
+
+    return await this.companyRepository.save(
+      this.companyRepository.create(companyToSave),
+    );
   }
 
   public async findOneCompany(
@@ -119,6 +124,20 @@ export class SellerService {
       .where(options);
 
     return await queryBuilder.getOne();
+  }
+
+  private async createSeller(
+    data: CreateSeller & { user: UserEntity },
+  ): Promise<SellerEntity> {
+    const foundSeller = await this.sellerRepository.findOne({
+      where: { user: { id: data.user.id } },
+    });
+
+    const sellerToSave = foundSeller ? { id: foundSeller.id, ...data } : data;
+
+    return await this.sellerRepository.save(
+      this.sellerRepository.create(sellerToSave),
+    );
   }
 
   public async findOne(

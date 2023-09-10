@@ -39,30 +39,22 @@ export class AuthController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('/buyers/register')
-  async registerBuyer(
-    @Body() dto: BuyerRegisterDto,
-  ): Promise<BuyerDto & { token: string }> {
-    const buyer = await this.authService.registerBuyer(dto);
-
-    return { ...BuyerDto.from(buyer), token: buyer.token };
+  async registerBuyer(@Body() dto: BuyerRegisterDto): Promise<void> {
+    await this.authService.registerBuyer(dto);
   }
 
   @Post('/sellers/individuals/register')
   async registerSellerIndividual(
     @Body() dto: SellerIndividualRegisterDto,
-  ): Promise<SellerIndividualDto & { token: string }> {
-    const seller = await this.authService.registerSellerIndividual(dto);
-
-    return { ...SellerIndividualDto.from(seller), token: seller.token };
+  ): Promise<void> {
+    await this.authService.registerSellerIndividual(dto);
   }
 
   @Post('/sellers/companies/register')
   async registerSellerCompany(
     @Body() dto: SellerCompanyRegisterDto,
-  ): Promise<SellerCompanyDto & { token: string }> {
-    const seller = await this.authService.registerSellerCompany(dto);
-
-    return { ...SellerCompanyDto.from(seller), token: seller.token };
+  ): Promise<void> {
+    await this.authService.registerSellerCompany(dto);
   }
 
   @Post('/login')
@@ -71,19 +63,19 @@ export class AuthController {
   ): Promise<
     (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string }
   > {
-    const { role, ...userType } = await this.authService.login(dto);
+    const { role, ...userTypeEntity } = await this.authService.login(dto);
 
     let userDto;
 
     if (role === UserRole.Buyer) {
-      userDto = BuyerDto.from(userType as BuyerEntity);
+      userDto = BuyerDto.from(userTypeEntity as BuyerEntity);
     } else if (role === UserRole.SellerIndividual) {
-      userDto = SellerIndividualDto.from(userType as IndividualEntity);
+      userDto = SellerIndividualDto.from(userTypeEntity as IndividualEntity);
     } else if (role === UserRole.SellerCompany) {
-      userDto = SellerCompanyDto.from(userType as CompanyEntity);
+      userDto = SellerCompanyDto.from(userTypeEntity as CompanyEntity);
     }
 
-    return { ...userDto, token: userType.token };
+    return { ...userDto, token: userTypeEntity.token };
   }
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT })

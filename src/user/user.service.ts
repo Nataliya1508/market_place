@@ -13,7 +13,15 @@ export class UserService {
   ) {}
 
   public async create(data: CreateUser): Promise<UserEntity> {
-    return await this.userRepository.save(this.userRepository.create(data));
+    const { email } = data;
+    const foundUser = await this.userRepository.findOne({ where: { email } });
+
+    // Updating user's data if user already exists
+    const userToSave = foundUser ? { id: foundUser.id, ...data } : data;
+
+    return await this.userRepository.save(
+      this.userRepository.create(userToSave),
+    );
   }
 
   public async findOne(

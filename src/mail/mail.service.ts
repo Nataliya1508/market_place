@@ -23,7 +23,7 @@ export class MailService {
       { url: verificationLink },
     );
 
-    return await this.mailer.sendMail({
+    await this.mailer.sendMail({
       to: mailData.to,
       subject: 'Email confirmation',
       html: letter,
@@ -39,7 +39,7 @@ export class MailService {
       { url: resetLink },
     );
 
-    return await this.mailer.sendMail({
+    await this.mailer.sendMail({
       to: mailData.to,
       subject: 'Password reset',
       html: letter,

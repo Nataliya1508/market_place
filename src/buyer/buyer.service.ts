@@ -22,11 +22,18 @@ export class BuyerService {
 
     const user = await this.userService.create({ email, password });
 
-    const buyer = await this.buyerRepository.save(
-      this.buyerRepository.create({ ...buyerData, user }),
-    );
+    const foundBuyer = await this.buyerRepository.findOne({
+      where: { user: { id: user.id } },
+    });
 
-    return await this.findOne({ id: buyer.id });
+    // Updating buyer's data if buyer already exists
+    const buyerToCreate = foundBuyer
+      ? { id: foundBuyer.id, ...buyerData }
+      : { ...buyerData, user };
+
+    return await this.buyerRepository.save(
+      this.buyerRepository.create(buyerToCreate),
+    );
   }
 
   public async findOne(

@@ -23,7 +23,7 @@ export class BuyerEntity {
   lastName: string;
 
   @ApiProperty({ example: '+3809905005050', description: 'phoneNumber' })
-  @Column({ unique: true })
+  @Column()
   phoneNumber: string;
 
   @ApiProperty({ example: 'false', description: 'online or offline status' })

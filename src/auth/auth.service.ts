@@ -5,7 +5,6 @@ import {
 } from '@app/auth/dto/sellerRegister.dto';
 import { UserLoginDto } from '@app/auth/dto/userLogin.dto';
 import { EmailAlreadyExistsException } from '@app/auth/exceptions/EmailAlreadyExists.exception';
-import { PhoneNumberAlreadyExistsException } from '@app/auth/exceptions/PhoneNumberAlreadyExists.exception';
 import { ForgotPasswordTokenPayload } from '@app/auth/types/forgotPasswordTokenPayload.interface';
 import { JwtPayload } from '@app/auth/types/jwtPayload.type';
 import { VerificationTokenPayload } from '@app/auth/types/verificationTokenPayload.interface';
@@ -19,9 +18,9 @@ import { UserRole } from '@app/user/enums/userRole.enum';
 import { UserService } from '@app/user/user.service';
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { compare } from 'bcrypt';
@@ -37,35 +36,50 @@ export class AuthService {
     private readonly sellerService: SellerService,
   ) {}
 
-  public async registerBuyer(
-    dto: BuyerRegisterDto,
-  ): Promise<BuyerEntity & { token: string }> {
-    const { email, phoneNumber } = dto;
+  public async registerBuyer(dto: BuyerRegisterDto): Promise<void> {
+    const { email } = dto;
 
-    const user = await this.userService.findOne({ email });
+    const user = await this.userService.findOne({ email, emailVerified: true });
 
     if (user) {
       throw new EmailAlreadyExistsException(email);
     }
 
-    const buyer = await this.buyerService.findOne({ phoneNumber });
-
-    if (buyer) {
-      throw new PhoneNumberAlreadyExistsException(phoneNumber);
-    }
-
-    const newBuyer = await this.buyerService.create(dto);
+    await this.buyerService.create(dto);
 
     await this.sendVerificationMessage(email);
+  }
 
-    return {
-      ...newBuyer,
-      token: this.generateJwt({
-        id: newBuyer.id,
-        email: newBuyer.user.email,
-        role: newBuyer.user.role,
-      }),
-    };
+  public async registerSellerIndividual(
+    dto: SellerIndividualRegisterDto,
+  ): Promise<void> {
+    const { email } = dto;
+
+    const user = await this.userService.findOne({ email, emailVerified: true });
+
+    if (user) {
+      throw new EmailAlreadyExistsException(email);
+    }
+
+    await this.sellerService.createIndividual(dto);
+
+    await this.sendVerificationMessage(email);
+  }
+
+  public async registerSellerCompany(
+    dto: SellerCompanyRegisterDto,
+  ): Promise<void> {
+    const { email } = dto;
+
+    const user = await this.userService.findOne({ email, emailVerified: true });
+
+    if (user) {
+      throw new EmailAlreadyExistsException(email);
+    }
+
+    await this.sellerService.createCompany(dto);
+
+    await this.sendVerificationMessage(email);
   }
 
   async login(dto: UserLoginDto): Promise<
@@ -76,19 +90,16 @@ export class AuthService {
   > {
     const { email, password } = dto;
 
-    const user = await this.userService.findOne({ email });
+    const user = await this.userService.findOne({ email, emailVerified: true });
 
     if (!user) {
-      throw new HttpException('Invalid email provided', HttpStatus.BAD_REQUEST);
+      throw new NotFoundException('User not found');
     }
 
     const isPasswordCorrect = await compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      throw new HttpException(
-        'Invalid password provided',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Invalid password provided');
     }
 
     const { role, id } = user;
@@ -108,78 +119,13 @@ export class AuthService {
     }
 
     if (!userData) {
-      throw new HttpException(
-        'User not found',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw new UnprocessableEntityException('User not found');
     }
 
     return {
       ...userData,
       token: this.generateJwt(user),
       role,
-    };
-  }
-
-  public async registerSellerIndividual(
-    dto: SellerIndividualRegisterDto,
-  ): Promise<IndividualEntity & { token: string }> {
-    const { email, phoneNumber } = dto;
-
-    const user = await this.userService.findOne({ email });
-
-    if (user) {
-      throw new EmailAlreadyExistsException(email);
-    }
-
-    const seller = await this.sellerService.findOne({ phoneNumber });
-
-    if (seller) {
-      throw new PhoneNumberAlreadyExistsException(phoneNumber);
-    }
-
-    const newSeller = await this.sellerService.createIndividual(dto);
-
-    await this.sendVerificationMessage(email);
-
-    return {
-      ...newSeller,
-      token: this.generateJwt({
-        id: newSeller.id,
-        email,
-        role: newSeller.seller.user.role,
-      }),
-    };
-  }
-
-  public async registerSellerCompany(
-    dto: SellerCompanyRegisterDto,
-  ): Promise<CompanyEntity & { token: string }> {
-    const { email, phoneNumber } = dto;
-
-    const user = await this.userService.findOne({ email });
-
-    if (user) {
-      throw new EmailAlreadyExistsException(email);
-    }
-
-    const seller = await this.sellerService.findOne({ phoneNumber });
-
-    if (seller) {
-      throw new PhoneNumberAlreadyExistsException(phoneNumber);
-    }
-
-    const newSeller = await this.sellerService.createCompany(dto);
-
-    await this.sendVerificationMessage(email);
-
-    return {
-      ...newSeller,
-      token: this.generateJwt({
-        id: newSeller.id,
-        email,
-        role: newSeller.seller.user.role,
-      }),
     };
   }
 

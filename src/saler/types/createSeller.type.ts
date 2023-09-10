@@ -1,10 +1,10 @@
-type BaseSeller = {
-  id: number;
+export type CreateSeller = {
   name: string;
   lastName: string;
   phoneNumber: string;
   email: string;
   password: string;
+  isActive?: boolean;
 };
 
 export type CreateIndividualSeller = {
@@ -15,7 +15,7 @@ export type CreateIndividualSeller = {
   workingHours: string;
   bankCardNumber: string;
   bankCardExpirationDate: string;
-} & Omit<BaseSeller, 'id'>;
+} & CreateSeller;
 
 export type CreateCompanySeller = {
   companyName: string;
@@ -29,4 +29,4 @@ export type CreateCompanySeller = {
   bankName?: string | null;
   mfo?: string | null;
   edrpou?: string | null;
-} & Omit<BaseSeller, 'id'>;
+} & CreateSeller;

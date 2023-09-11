@@ -18,7 +18,14 @@ import { CompanyEntity } from '@app/saler/entities/company.entity';
 import { IndividualEntity } from '@app/saler/entities/individual.entity';
 import { User as CurrentUser } from '@app/user/decorators/user.decorator';
 import { UserRole } from '@app/user/enums/userRole.enum';
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -103,7 +110,7 @@ export class AuthController {
     description: 'Email verification token expired / Bad verification token',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('verify-email')
+  @Patch('verify-email')
   async verify(@Body() dto: VerifyEmailDto): Promise<void> {
     await this.authService.verifyEmail(dto.token);
   }
@@ -121,7 +128,7 @@ export class AuthController {
     description: 'Password reset token has expired / Bad password reset token',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('reset-password')
+  @Patch('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
     const { token, password } = dto;
     await this.authService.resetPassword(token, password);

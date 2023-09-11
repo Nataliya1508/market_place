@@ -159,11 +159,6 @@ export class AuthService {
 
   public async verifyEmail(token: string): Promise<void> {
     const email = await this.decodeVerificationToken(token);
-    const user = await this.userService.findOne({ email });
-
-    if (user.emailVerified) {
-      throw new BadRequestException('Email is already confirmed');
-    }
 
     await this.userService.markEmailVerified(email);
   }

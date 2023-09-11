@@ -100,8 +100,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description:
-      'Email is already confirmed / Email verification token expired / Bad verification token',
+    description: 'Email verification token expired / Bad verification token',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('verify-email')

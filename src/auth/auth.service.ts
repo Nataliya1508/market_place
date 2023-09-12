@@ -14,8 +14,10 @@ import { MailService } from '@app/mail/mail.service';
 import { CompanyEntity } from '@app/saler/entities/company.entity';
 import { IndividualEntity } from '@app/saler/entities/individual.entity';
 import { SellerService } from '@app/saler/seller.service';
+import { UserEntity } from '@app/user/entities/user.entity';
 import { UserRole } from '@app/user/enums/userRole.enum';
 import { UserService } from '@app/user/user.service';
+import { EntityCondition } from '@app/utils/types/entityCondition.type';
 import {
   BadRequestException,
   Injectable,
@@ -47,7 +49,7 @@ export class AuthService {
 
     await this.buyerService.create(dto);
 
-    await this.sendVerificationMessage(email);
+    await this.sendVerificationMessage({ email, role: UserRole.Buyer });
   }
 
   public async registerSellerIndividual(
@@ -63,7 +65,10 @@ export class AuthService {
 
     await this.sellerService.createIndividual(dto);
 
-    await this.sendVerificationMessage(email);
+    await this.sendVerificationMessage({
+      email,
+      role: UserRole.SellerIndividual,
+    });
   }
 
   public async registerSellerCompany(
@@ -79,7 +84,7 @@ export class AuthService {
 
     await this.sellerService.createCompany(dto);
 
-    await this.sendVerificationMessage(email);
+    await this.sendVerificationMessage({ email, role: UserRole.SellerCompany });
   }
 
   async login(dto: UserLoginDto): Promise<
@@ -104,19 +109,7 @@ export class AuthService {
 
     const { role, id } = user;
 
-    let userData;
-
-    if (role === UserRole.Buyer) {
-      userData = await this.buyerService.findOne({ user: { id } });
-    } else if (role === UserRole.SellerIndividual) {
-      userData = await this.sellerService.findOneIndividual({
-        seller: { user: { id } },
-      });
-    } else if (role === UserRole.SellerCompany) {
-      userData = await this.sellerService.findOneCompany({
-        seller: { user: { id } },
-      });
-    }
+    const userData = await this.findUserByRole(role, { id });
 
     if (!userData) {
       throw new UnprocessableEntityException(
@@ -126,8 +119,11 @@ export class AuthService {
 
     return {
       ...userData,
-      token: this.generateJwt(user),
+      token: this.generateJwt({ id: userData.id, email, role }),
       role,
+    } as (BuyerEntity | IndividualEntity | CompanyEntity) & {
+      token: string;
+      role: string;
     };
   }
 
@@ -143,34 +139,52 @@ export class AuthService {
     );
   }
 
-  public async sendVerificationMessage(email: string): Promise<void> {
-    const payload: VerificationTokenPayload = { email };
+  public async sendVerificationMessage(
+    data: VerificationTokenPayload,
+  ): Promise<void> {
     const secret = this.configService.get<string>('JWT_VERIFICATION_SECRET');
     const expiresIn = this.configService.get<string>(
       'JWT_VERIFICATION_EXPIRATION',
     );
-    const token = jwt.sign(payload, secret, { expiresIn });
+    const token = jwt.sign(data, secret, { expiresIn });
 
     await this.mailService.sendVerificationLetter({
-      to: email,
+      to: data.email,
       data: { token },
     });
   }
 
-  public async verifyEmail(token: string): Promise<void> {
-    const email = await this.decodeVerificationToken(token);
+  public async verifyEmail(
+    token: string,
+  ): Promise<
+    (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string }
+  > {
+    const { email, role } = await this.decodeVerificationToken(token);
 
     await this.userService.markEmailVerified(email);
+
+    const userData = await this.findUserByRole(role, { email });
+
+    return {
+      ...userData,
+      token: this.generateJwt({ email, role, id: userData.id }),
+    } as (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string };
   }
 
-  private async decodeVerificationToken(token: string): Promise<string> {
+  private async decodeVerificationToken(
+    token: string,
+  ): Promise<{ email: string; role: UserRole }> {
     try {
       const secret = this.configService.get('JWT_VERIFICATION_SECRET');
 
       const payload = await jwt.verify(token, secret);
 
-      if (typeof payload === 'object' && 'email' in payload) {
-        return payload.email;
+      if (
+        typeof payload === 'object' &&
+        'email' in payload &&
+        'role' in payload
+      ) {
+        return payload as { email: string; role: UserRole };
       }
 
       throw new BadRequestException();
@@ -221,6 +235,27 @@ export class AuthService {
       }
 
       throw new BadRequestException('Bad password reset token');
+    }
+  }
+
+  private async findUserByRole(
+    role: string,
+    options: EntityCondition<UserEntity>,
+  ): Promise<BuyerEntity | IndividualEntity | CompanyEntity | undefined> {
+    if (role === UserRole.Buyer) {
+      return await this.buyerService.findOne({ user: options });
+    }
+
+    if (role === UserRole.SellerIndividual) {
+      return await this.sellerService.findOneIndividual({
+        seller: { user: options },
+      });
+    }
+
+    if (role === UserRole.SellerCompany) {
+      return await this.sellerService.findOneCompany({
+        seller: { user: options },
+      });
     }
   }
 }

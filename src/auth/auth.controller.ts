@@ -8,17 +8,18 @@ import {
 import { UserLoginDto } from '@app/auth/dto/userLogin.dto';
 import { VerifyEmailDto } from '@app/auth/dto/verifyEmail.dto';
 import { BuyerEntity } from '@app/buyer/buyer.entity';
-import { BuyerDto } from '@app/buyer/dto/buyer.dto';
 import { MailService } from '@app/mail/mail.service';
-import {
-  SellerCompanyDto,
-  SellerIndividualDto,
-} from '@app/saler/dto/seller.dto';
 import { CompanyEntity } from '@app/saler/entities/company.entity';
 import { IndividualEntity } from '@app/saler/entities/individual.entity';
-import { User as CurrentUser } from '@app/user/decorators/user.decorator';
-import { UserRole } from '@app/user/enums/userRole.enum';
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { User } from '@app/user/decorators/user.decorator';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -82,37 +83,28 @@ export class AuthController {
   ): Promise<
     (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string }
   > {
-    const { role, ...userTypeEntity } = await this.authService.login(dto);
-
-    let userDto;
-
-    if (role === UserRole.Buyer) {
-      userDto = BuyerDto.from(userTypeEntity as BuyerEntity);
-    } else if (role === UserRole.SellerIndividual) {
-      userDto = SellerIndividualDto.from(userTypeEntity as IndividualEntity);
-    } else if (role === UserRole.SellerCompany) {
-      userDto = SellerCompanyDto.from(userTypeEntity as CompanyEntity);
-    }
-
-    return { ...userDto, token: userTypeEntity.token };
+    return await this.authService.login(dto);
   }
 
-  @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiResponse({ status: HttpStatus.OK })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description:
-      'Email is already confirmed / Email verification token expired / Bad verification token',
+    description: 'Email verification token expired / Bad verification token',
   })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('verify-email')
-  async verify(@Body() dto: VerifyEmailDto): Promise<void> {
-    await this.authService.verifyEmail(dto.token);
+  @HttpCode(HttpStatus.OK)
+  @Patch('verify-email')
+  async verify(
+    @Body() dto: VerifyEmailDto,
+  ): Promise<
+    (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string }
+  > {
+    return await this.authService.verifyEmail(dto.token);
   }
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('forgot-password')
-  async forgotPassword(@CurrentUser('email') email: string): Promise<void> {
+  async forgotPassword(@User('email') email: string): Promise<void> {
     await this.authService.forgotPassword(email);
   }
 
@@ -122,7 +114,7 @@ export class AuthController {
     description: 'Password reset token has expired / Bad password reset token',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('reset-password')
+  @Patch('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
     const { token, password } = dto;
     await this.authService.resetPassword(token, password);

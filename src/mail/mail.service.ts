@@ -62,10 +62,10 @@ export class MailService {
   }
 
   private getVerificationLink(token: string): string {
-    return `${this.configService.get('EMAIL_VERIFICATION_URL')}?token=${token}`;
+    return `${this.configService.get('EMAIL_VERIFICATION_URL')}?code=${token}`;
   }
 
   private getResetPasswordLink(token: string): string {
-    return `${this.configService.get('RESET_PASSWORD_URL')}?token=${token}`;
+    return `${this.configService.get('RESET_PASSWORD_URL')}?code=${token}`;
   }
 }

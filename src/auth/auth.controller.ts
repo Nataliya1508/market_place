@@ -98,7 +98,7 @@ export class AuthController {
   ): Promise<
     (BuyerEntity | IndividualEntity | CompanyEntity) & { token: string }
   > {
-    return await this.authService.verifyEmail(dto.token);
+    return await this.authService.verifyEmail(dto.code);
   }
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
@@ -116,7 +116,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
-    const { token, password } = dto;
-    await this.authService.resetPassword(token, password);
+    const { code, password } = dto;
+    await this.authService.resetPassword(code, password);
   }
 }

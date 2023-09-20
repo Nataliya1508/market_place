@@ -260,6 +260,8 @@
 //   }
 // }
 import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
+import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
+import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { UserEntity } from '@app/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -271,6 +273,7 @@ export class AuthService {
   constructor(
     @InjectRepository(BuyerEntity) private readonly buyerRepository: Repository<BuyerEntity>,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(SellerEntity) private readonly sellerRepository: Repository<SellerEntity>,
   ) {}
   async createBuyer(createBuyerDto: CreateBuyerDto): Promise<BuyerEntity> {
     const user = new UserEntity();
@@ -279,11 +282,28 @@ export class AuthService {
     const buyer = new BuyerEntity();
     buyer.name = createBuyerDto.name;
     Object.assign(buyer, createBuyerDto);
-    // console.log('newBuyer', buyer)
+    console.log('newBuyer', buyer)
     const savedUser = await this.userRepository.save(user);
     savedUser.buyer = buyer;
     await this.userRepository.save(savedUser);
     const savedBuyer = await this.buyerRepository.save(buyer)
     return savedBuyer;
+  }
+
+    async createSeller(createSellerDto: CreateSellerDto): Promise<SellerEntity> {
+      const user = new UserEntity();
+      console.log ('email', user.email)
+    user.email = createSellerDto.email;
+    user.password = createSellerDto.password;
+    const seller = new SellerEntity();
+    seller.companyName = createSellerDto.companyName;
+    Object.assign(seller, createSellerDto);
+    console.log('newSeller', seller)
+    const savedUser = await this.userRepository.save(user);
+      // user.seller = seller;
+    savedUser.seller = seller;
+    await this.userRepository.save(savedUser);
+    const savedSeller = await this.sellerRepository.save(seller)
+    return savedSeller;
   }
 }

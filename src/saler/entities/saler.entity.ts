@@ -1,38 +1,8 @@
-// import { UserEntity } from '@app/user/entities/user.entity';
-// import {
-//   Column,
-//   Entity,
-//   JoinColumn,
-//   OneToOne,
-//   PrimaryGeneratedColumn,
-// } from 'typeorm';
-
-// @Entity({ name: 'sellers' })
-// export class SellerEntity {
-//   @PrimaryGeneratedColumn()
-//   id: number;
-
-//   @Column('varchar')
-//   name: string;
-
-//   @Column('varchar')
-//   lastName: string;
-
-//   @Column('varchar')
-//   phoneNumber: string;
-
-//   @Column('varchar', { default: false })
-//   isActive: boolean;
-
-//   @OneToOne(() => UserEntity, (user) => user.id, {
-//     eager: true,
-//     onDelete: 'CASCADE',
-//   })
-//   @JoinColumn()
-//   user: UserEntity;
-// }
+import { hash } from 'bcrypt';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -41,15 +11,15 @@ import {
 } from 'typeorm';
 import { TypeSaler } from '../enums/enums';
 
-@Entity({ name: 'salers' })
+@Entity({ name: 'sellers' })
 export class SellerEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ default: '' })
   companyName: string;
 
-  @Column()
+  @Column({ unique: true })
   phoneNumber: number;
 
   @Column({ unique: true })
@@ -58,7 +28,7 @@ export class SellerEntity {
   @Column({ type: 'enum', enum: TypeSaler, default: TypeSaler.PrivateTutor })
   typeSaler: TypeSaler;
 
-  @Column()
+  @Column({ default: '' })
   address: string;
 
   @Column({ default: '' })
@@ -73,7 +43,7 @@ export class SellerEntity {
   @Column({ default: '' })
   aboutUs: string;
 
-  @Column()
+  @Column({ nullable: true })
   contactPerson: number;
 
   @Column({ select: false })
@@ -85,7 +55,20 @@ export class SellerEntity {
   @Column({ default: false })
   isActive: boolean;
 
-  @OneToOne(() => UserEntity, (seller) => seller.seller)
+    @OneToOne(() => UserEntity, (user) => user.seller,
+    {
+    eager: true,
+    onDelete: 'CASCADE',
+    })
+      
   @JoinColumn()
-  user: SellerEntity;
+    user: UserEntity;
+  
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.user && this.user.password) {
+      this.user.password = await hash(this.user.password, 10);
+    }
+  }
 }

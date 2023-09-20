@@ -120,6 +120,7 @@
 //     await this.authService.resetPassword(code, password);
 //   }
 // }
+import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 import { AuthService } from './auth.service';
@@ -129,8 +130,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('/register/buyer')
   async registerBuyer(@Body('buyer') createBuyerDto: CreateBuyerDto) {
-    console.log('createBuyerDTO', createBuyerDto);
+    // console.log('createBuyerDTO', createBuyerDto);
     return this.authService.createBuyer(createBuyerDto);
+    
+  }
+    @Post('/register/seller')
+  async registerSeller(@Body('seller') createSellerDto: CreateSellerDto) {
+    // console.log('createSellerDTO', createSellerDto);
+    return this.authService.createSeller(createSellerDto);
     
   }
 }

@@ -25,11 +25,6 @@ export class BuyerEntity {
   @Column({ default: false })
   isActive: boolean;
 
-  //   @OneToOne(() => UserEntity, (user) => user.id, {
-  //   eager: true,
-  //   onDelete: 'CASCADE',
-  // })
-
   @OneToOne(() => UserEntity, (user) => user.buyer,
     {
     eager: true,
@@ -47,12 +42,5 @@ export class BuyerEntity {
     }
   }
 }
-  // @OneToOne(() => UserEntity, (user) => user.buyer)
-  // user: UserEntity;
 
-  //   @BeforeInsert()
-  // @BeforeUpdate()
-  // async hashPassword() {
-  //   this.password = await hash(this.password, 10);
-  // }
 

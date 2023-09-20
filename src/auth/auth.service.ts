@@ -263,12 +263,11 @@ import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
 import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { UserEntity } from '@app/user/entities/user.entity';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 import { Repository } from 'typeorm';
-import { sign } from "jsonwebtoken"
-import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
+
 
 
 @Injectable()
@@ -279,6 +278,7 @@ export class AuthService {
     @InjectRepository(SellerEntity) private readonly sellerRepository: Repository<SellerEntity>,
   ) {}
   async createBuyer(createBuyerDto: CreateBuyerDto): Promise<BuyerEntity> {
+
     const user = new UserEntity();
     user.email = createBuyerDto.email;
     user.password = createBuyerDto.password;
@@ -286,6 +286,18 @@ export class AuthService {
     buyer.name = createBuyerDto.name;
     Object.assign(buyer, createBuyerDto);
     console.log('newBuyer', buyer)
+            const buyerByEmail = await this.userRepository.findOne({
+      where: { email: createBuyerDto.email },
+        });
+            const buyerByPhoneNumber = await this.buyerRepository.findOne({
+      where: { phoneNumber: createBuyerDto.phoneNumber },
+    });
+    if (buyerByEmail || buyerByPhoneNumber) {
+      throw new HttpException(
+        'Email or Phone is already in use ',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     const savedUser = await this.userRepository.save(user);
     savedUser.buyer = buyer;
     await this.userRepository.save(savedUser);
@@ -302,9 +314,20 @@ export class AuthService {
     const seller = new SellerEntity();
     seller.companyName = createSellerDto.companyName;
     Object.assign(seller, createSellerDto);
-    console.log('newSeller', seller)
+      console.log('newSeller', seller)
+                  const sellerByEmail = await this.userRepository.findOne({
+      where: { email: createSellerDto.email },
+        });
+            const sellerByPhoneNumber = await this.sellerRepository.findOne({
+      where: { phoneNumber: createSellerDto.phoneNumber },
+    });
+    if (sellerByEmail || sellerByPhoneNumber) {
+      throw new HttpException(
+        'Email or Phone is already in use ',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     const savedUser = await this.userRepository.save(user);
-      // user.seller = seller;
     savedUser.seller = seller;
     await this.userRepository.save(savedUser);
     const savedSeller = await this.sellerRepository.save(seller)

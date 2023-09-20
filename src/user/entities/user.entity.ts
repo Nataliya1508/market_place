@@ -66,6 +66,7 @@ export class UserEntity {
   @Column({ type: 'enum', enum: Role, default: Role.Buyer })
   role: Role;
 
+
   @OneToOne(() => BuyerEntity, (buyer) => buyer.user)
   @JoinColumn()
   buyer: BuyerEntity;
@@ -77,6 +78,7 @@ export class UserEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
+     console.log('hashPassword() is being called');
     this.password = await hash(this.password, 10);
   }
 }

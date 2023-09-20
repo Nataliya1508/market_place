@@ -259,12 +259,31 @@
 //     }
 //   }
 // }
+import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
+import { UserEntity } from '@app/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
-  async createBuyer(createBuyerDto: CreateBuyerDto) {
-    return createBuyerDto;
+  constructor(
+    @InjectRepository(BuyerEntity) private readonly buyerRepository: Repository<BuyerEntity>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+  ) {}
+  async createBuyer(createBuyerDto: CreateBuyerDto): Promise<BuyerEntity> {
+    const user = new UserEntity();
+    user.email = createBuyerDto.email;
+    user.password = createBuyerDto.password;
+    const buyer = new BuyerEntity();
+    buyer.name = createBuyerDto.name;
+    Object.assign(buyer, createBuyerDto);
+    // console.log('newBuyer', buyer)
+    const savedUser = await this.userRepository.save(user);
+    savedUser.buyer = buyer;
+    await this.userRepository.save(savedUser);
+    const savedBuyer = await this.buyerRepository.save(buyer)
+    return savedBuyer;
   }
 }

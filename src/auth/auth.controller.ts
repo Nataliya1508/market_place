@@ -131,5 +131,6 @@ export class AuthController {
   async registerBuyer(@Body('buyer') createBuyerDto: CreateBuyerDto) {
     console.log('createBuyerDTO', createBuyerDto);
     return this.authService.createBuyer(createBuyerDto);
+    
   }
 }

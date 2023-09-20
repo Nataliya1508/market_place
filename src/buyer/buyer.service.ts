@@ -43,6 +43,27 @@
 //   }
 // }
 import { Injectable } from '@nestjs/common';
+import { sign } from 'jsonwebtoken';
+import { BuyerEntity } from './entities/buyer.entity';
+import { BuyerResponseInterface } from './types/buyerResponce.interface';
 
 @Injectable()
-export class BuyerService {}
+export class BuyerService {
+    generateJwt(buyer: BuyerEntity): string {
+        return sign({
+            id: buyer.id,
+            name: buyer.name,
+            email: buyer.email
+        }, process.env.JWT_SECRET);
+    }
+
+    buildBuyerResponse(buyer: BuyerEntity): BuyerResponseInterface {
+        return {
+            buyer: {
+                ...buyer,
+                token: this.generateJwt(buyer)
+            }
+
+        }
+    }
+}

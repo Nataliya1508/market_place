@@ -267,6 +267,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 import { Repository } from 'typeorm';
+import { sign } from "jsonwebtoken"
+import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
+
 
 @Injectable()
 export class AuthService {
@@ -290,6 +293,7 @@ export class AuthService {
     return savedBuyer;
   }
 
+
     async createSeller(createSellerDto: CreateSellerDto): Promise<SellerEntity> {
       const user = new UserEntity();
       console.log ('email', user.email)
@@ -305,5 +309,6 @@ export class AuthService {
     await this.userRepository.save(savedUser);
     const savedSeller = await this.sellerRepository.save(seller)
     return savedSeller;
-  }
+    }
+  
 }

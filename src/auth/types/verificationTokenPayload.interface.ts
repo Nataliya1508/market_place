@@ -1,6 +1,6 @@
-import { UserRole } from '@app/user/enums/userRole.enum';
+// import { UserRole } from '@app/user/enums/userRole.enum';
 
-export interface VerificationTokenPayload {
-  email: string;
-  role: UserRole;
-}
+// export interface VerificationTokenPayload {
+//   email: string;
+//   role: UserRole;
+// }

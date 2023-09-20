@@ -1,5 +1,5 @@
-import { CompanyEntity } from '@app/saler/entities/company.entity';
-import { IndividualEntity } from '@app/saler/entities/individual.entity';
+// import { CompanyEntity } from '@app/saler/entities/company.entity';
+// import { IndividualEntity } from '@app/saler/entities/individual.entity';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { UserModule } from '@app/user/user.module';
 import { Module } from '@nestjs/common';
@@ -10,7 +10,7 @@ import { SellerService } from './seller.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SellerEntity, IndividualEntity, CompanyEntity]),
+    TypeOrmModule.forFeature([SellerEntity]),
     UserModule,
   ],
   providers: [SellerService],

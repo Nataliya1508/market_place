@@ -1,8 +1,9 @@
-import { UserRole } from '@app/user/enums/userRole.enum';
+
+import { Role } from '../enums/enums';
 
 export type CreateUser = {
   email: string;
   password: string;
-  role?: UserRole;
+  role?: Role;
   emailVerified?: boolean;
 };

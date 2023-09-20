@@ -1,3 +1,3 @@
-export interface ForgotPasswordTokenPayload {
-  email: string;
-}
+// export interface ForgotPasswordTokenPayload {
+//   email: string;
+// }

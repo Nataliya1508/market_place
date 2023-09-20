@@ -13,10 +13,10 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   migrations: [__dirname + '/migrations/**/*{.ts, .js}'],
   ssl:
-    process.env.DATABASE_SSL_ENABLED === 'true'
+    process.env.DATABASE_SSL_ENABLED === 'false'
       ? {
           rejectUnauthorized:
-            process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
+            process.env.DATABASE_REJECT_UNAUTHORIZED === 'false',
         }
       : undefined,
 });

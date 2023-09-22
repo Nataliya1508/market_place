@@ -11,6 +11,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
@@ -105,6 +106,9 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+      if (user.emailVerified === false) {
+    throw new UnauthorizedException('Email is not verified');
+  }
     const isPasswordCorrect = await compare(
       userLoginDto.password,
       user.password,

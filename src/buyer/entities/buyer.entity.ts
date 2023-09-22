@@ -33,7 +33,7 @@ export class BuyerEntity {
       
   @JoinColumn()
     user: UserEntity;
-  email: any;
+  email: string;
   
   //   @BeforeInsert()
   // @BeforeUpdate()

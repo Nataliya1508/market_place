@@ -25,14 +25,12 @@ export class AuthService {
   async createBuyer(createBuyerDto: CreateBuyerDto): Promise<BuyerEntity> {
 
     const user = new UserEntity();
-    console.log('user', user)
     user.email = createBuyerDto.email;
     user.password = createBuyerDto.password;
     user.role = Role.Buyer;
     const buyer = new BuyerEntity();
     buyer.name = createBuyerDto.name;
     Object.assign(buyer, createBuyerDto);
-    console.log('newBuyer', buyer)
             const buyerByEmail = await this.userRepository.findOne({
       where: { email: createBuyerDto.email },
         });
@@ -55,14 +53,12 @@ export class AuthService {
 
     async createSeller(createSellerDto: CreateSellerDto): Promise<SellerEntity> {
       const user = new UserEntity();
-      console.log ('email', user.email)
     user.email = createSellerDto.email;
       user.password = createSellerDto.password;
       user.role = Role.Seller;
     const seller = new SellerEntity();
     seller.companyName = createSellerDto.companyName;
     Object.assign(seller, createSellerDto);
-      console.log('newSeller', seller)
                   const sellerByEmail = await this.userRepository.findOne({
       where: { email: createSellerDto.email },
         });

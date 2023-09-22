@@ -1,6 +1,5 @@
 import { AuthMiddleware } from '@app/auth/middlewares/auth.middleware';
 import { BuyerController } from '@app/buyer/buyer.controller';
-// import { BuyerEntity } from '@app/buyer/buyer.entity';
 import { BuyerService } from '@app/buyer/buyer.service';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';

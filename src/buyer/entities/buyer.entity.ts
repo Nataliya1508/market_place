@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'buyers' })
 export class BuyerEntity {
@@ -35,13 +35,13 @@ export class BuyerEntity {
     user: UserEntity;
   email: any;
   
-    @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    if (this.user && this.user.password) {
-      this.user.password = await hash(this.user.password, 10);
-    }
+  //   @BeforeInsert()
+  // @BeforeUpdate()
+  // async hashPassword() {
+  //   if (this.user && this.user.password) {
+  //     this.user.password = await hash(this.user.password, 10);
+  //   }
   }
-}
+// }
 
 

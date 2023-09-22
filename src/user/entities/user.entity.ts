@@ -4,7 +4,6 @@ import { Exclude } from 'class-transformer';
 import { BuyerEntity } from 'src/buyer/entities/buyer.entity';
 import {
   BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -25,8 +24,8 @@ export class UserEntity {
   @Column({ default: false })
   emailVerified: boolean;
 
-  @Exclude()
-  @Column()
+  // @Exclude()
+  @Column({select: false})
   password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.Buyer})
@@ -42,7 +41,6 @@ export class UserEntity {
   seller: SellerEntity;
 
   @BeforeInsert()
-  @BeforeUpdate()
   async hashPassword() {
      console.log('hashPassword() is being called');
     this.password = await hash(this.password, 10);

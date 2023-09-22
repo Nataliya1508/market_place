@@ -2,7 +2,6 @@ import { hash } from 'bcrypt';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -65,7 +64,6 @@ export class SellerEntity {
     user: UserEntity;
   
   @BeforeInsert()
-  @BeforeUpdate()
   async hashPassword() {
     if (this.user && this.user.password) {
       this.user.password = await hash(this.user.password, 10);

@@ -1,6 +1,5 @@
 import { AuthMiddleware } from '@app/auth/middlewares/auth.middleware';
 import { BuyerController } from '@app/buyer/buyer.controller';
-import { BuyerEntity } from '@app/buyer/buyer.entity';
 import { BuyerService } from '@app/buyer/buyer.service';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';
@@ -10,6 +9,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
 import { BuyerModule } from './buyer/buyer.module';
+import { BuyerEntity } from './buyer/entities/buyer.entity';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 import { UserModule } from './user/user.module';

@@ -1,6 +1,6 @@
 enum TypeSaler {
-  PrivateTutor = 'privateTutor',
-  LegalEntity = 'legalEntity',
+  PrivatePerson = 'privatePerson',
+  Business = 'business',
 }
 
 export { TypeSaler };

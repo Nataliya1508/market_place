@@ -24,7 +24,7 @@ export class SellerEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ type: 'enum', enum: TypeSaler, default: TypeSaler.PrivateTutor })
+  @Column({ type: 'enum', enum: TypeSaler, default: TypeSaler.PrivatePerson })
   typeSaler: TypeSaler;
 
   @Column({ default: '' })

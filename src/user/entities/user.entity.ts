@@ -25,12 +25,11 @@ export class UserEntity {
   emailVerified: boolean;
 
   // @Exclude()
-  @Column({select: false})
+  @Column({ select: false })
   password: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.Buyer})
+  @Column({ type: 'enum', enum: Role, default: Role.Buyer })
   role: Role;
-
 
   @OneToOne(() => BuyerEntity, (buyer) => buyer.user)
   @JoinColumn()

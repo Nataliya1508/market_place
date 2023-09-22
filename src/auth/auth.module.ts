@@ -14,7 +14,13 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, BuyerEntity, SellerEntity]),MailModule, UserModule, BuyerModule, SalerModule],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, BuyerEntity, SellerEntity]),
+    MailModule,
+    UserModule,
+    BuyerModule,
+    SalerModule,
+  ],
   controllers: [AuthController],
   providers: [AuthService, BuyerService, SellerService],
   exports: [AuthService],

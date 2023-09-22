@@ -54,15 +54,13 @@ export class SellerEntity {
   @Column({ default: false })
   isActive: boolean;
 
-    @OneToOne(() => UserEntity, (user) => user.seller,
-    {
+  @OneToOne(() => UserEntity, (user) => user.seller, {
     eager: true,
     onDelete: 'CASCADE',
-    })
-      
+  })
   @JoinColumn()
-    user: UserEntity;
-  
+  user: UserEntity;
+
   @BeforeInsert()
   async hashPassword() {
     if (this.user && this.user.password) {

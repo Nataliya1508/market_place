@@ -6,22 +6,23 @@ import { BuyerResponseInterface } from './types/buyerResponce.interface';
 
 @Injectable()
 export class BuyerService {
-    generateJwt(buyer: BuyerEntity): string {
+  generateJwt(buyer: BuyerEntity): string {
+    return sign(
+      {
+        id: buyer.id,
+        role: Role.Buyer,
+        email: buyer.email,
+      },
+      process.env.JWT_SECRET,
+    );
+  }
 
-        return sign({
-            id: buyer.id,
-            role: Role.Buyer,
-            email: buyer.email 
-        }, process.env.JWT_SECRET);
-    }
-
-    buildBuyerResponse(buyer: BuyerEntity): BuyerResponseInterface {
-        return {
-            buyer: {
-                ...buyer,
-                token: this.generateJwt(buyer)
-            }
-
-        }
-    }
+  buildBuyerResponse(buyer: BuyerEntity): BuyerResponseInterface {
+    return {
+      buyer: {
+        ...buyer,
+        token: this.generateJwt(buyer),
+      },
+    };
+  }
 }

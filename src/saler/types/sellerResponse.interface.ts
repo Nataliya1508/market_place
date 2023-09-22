@@ -1,4 +1,4 @@
-import { SellerType } from "./seller.type";
+import { SellerType } from './seller.type';
 
 export interface SellerResponseInterface {
   seller: SellerType & { token: string };

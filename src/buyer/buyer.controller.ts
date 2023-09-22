@@ -6,7 +6,5 @@ import { BuyerService } from './buyer.service';
 @Controller('buyers')
 @ApiTags('Buyers')
 export class BuyerController {
-  constructor(private readonly buyerService: BuyerService) {
-    
-  }
+  constructor(private readonly buyerService: BuyerService) {}
 }

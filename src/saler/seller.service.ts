@@ -141,22 +141,24 @@ import { SellerEntity } from './entities/saler.entity';
 import { SellerResponseInterface } from './types/sellerResponse.interface';
 
 @Injectable()
-    export class SellerService {
-    generateJwt(seller: SellerEntity): string {
-        return sign({
-            id: seller.id,
-            role: Role.Seller,
-            email: seller.email
-        }, process.env.JWT_SECRET);
-    }
+export class SellerService {
+  generateJwt(seller: SellerEntity): string {
+    return sign(
+      {
+        id: seller.id,
+        role: Role.Seller,
+        email: seller.email,
+      },
+      process.env.JWT_SECRET,
+    );
+  }
 
-    buildSellerResponse(seller: SellerEntity): SellerResponseInterface {
-        return {
-            seller: {
-                ...seller,
-                token: this.generateJwt(seller)
-            }
-
-        }
-    }
+  buildSellerResponse(seller: SellerEntity): SellerResponseInterface {
+    return {
+      seller: {
+        ...seller,
+        token: this.generateJwt(seller),
+      },
+    };
+  }
 }

@@ -10,28 +10,31 @@ import { UserLoginDto } from './dto/user-login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService,
+  constructor(
+    private readonly authService: AuthService,
     private readonly buyerService: BuyerService,
-  private readonly sellerService: SellerService)
-  {}
+    private readonly sellerService: SellerService,
+  ) {}
   @Post('/register/buyer')
-  async registerBuyer(@Body('buyer') createBuyerDto: CreateBuyerDto): Promise<BuyerResponseInterface> {
+  async registerBuyer(
+    @Body('buyer') createBuyerDto: CreateBuyerDto,
+  ): Promise<BuyerResponseInterface> {
     const buyer = await this.authService.createBuyer(createBuyerDto);
-    return this.buyerService.buildBuyerResponse(buyer)
-    
+    return this.buyerService.buildBuyerResponse(buyer);
   }
 
-
-    @Post('/register/seller')
-  async registerSeller(@Body('seller') createSellerDto: CreateSellerDto): Promise<SellerResponseInterface> {
-       const seller = await this.authService.createSeller(createSellerDto);
+  @Post('/register/seller')
+  async registerSeller(
+    @Body('seller') createSellerDto: CreateSellerDto,
+  ): Promise<SellerResponseInterface> {
+    const seller = await this.authService.createSeller(createSellerDto);
     return this.sellerService.buildSellerResponse(seller);
-    }
-  
+  }
+
   @Post('/login')
-  async login(@Body('users') userLoginDto: UserLoginDto): Promise<BuyerResponseInterface | SellerResponseInterface> {
-    return  await this.authService.login(userLoginDto)
-    }
-  
-  
+  async login(
+    @Body('users') userLoginDto: UserLoginDto,
+  ): Promise<BuyerResponseInterface | SellerResponseInterface> {
+    return await this.authService.login(userLoginDto);
+  }
 }

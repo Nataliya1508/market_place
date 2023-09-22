@@ -4,12 +4,14 @@ import { Exclude } from 'class-transformer';
 import { BuyerEntity } from 'src/buyer/entities/buyer.entity';
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Role } from '../enums/enums';
 
 @Entity({ name: 'users' })
@@ -39,6 +41,7 @@ export class UserEntity {
   @JoinColumn()
   seller: SellerEntity;
 
+  @BeforeUpdate()
   @BeforeInsert()
   async hashPassword() {
     this.password = await hash(this.password, 10);

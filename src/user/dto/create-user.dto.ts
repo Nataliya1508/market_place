@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
+
 import { Role } from '../enums/enums';
 
 export class CreateUserDto {

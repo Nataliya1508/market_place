@@ -7,6 +7,7 @@ import { SalerModule } from '@app/saler/saler.module';
 import { SellerService } from '@app/saler/seller.service';
 import { UserEntity } from '@app/user/entities/user.entity';
 import { UserModule } from '@app/user/user.module';
+import { UserService } from '@app/user/user.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -22,7 +23,7 @@ import { AuthService } from './auth.service';
     SalerModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, BuyerService, SellerService],
+  providers: [AuthService, BuyerService, SellerService, UserService],
   exports: [AuthService],
 })
 export class AuthModule {}

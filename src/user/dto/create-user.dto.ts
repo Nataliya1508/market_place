@@ -1,5 +1,4 @@
 import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
-import { Role } from '../enums/enums';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -12,6 +11,4 @@ export class CreateUserDto {
       'Password must contain at least one uppercase letter, one lowercase letter, and one number',
   })
   readonly password: string;
-  @IsNotEmpty()
-  readonly role: Role;
 }

@@ -28,11 +28,11 @@ import { UserModule } from './user/user.module';
         database: configService.get<string>('DATABASE_NAME'),
         synchronize: false,
         ssl:
-          configService.get<string>('DATABASE_SSL_ENABLED') === 'false'
+          configService.get<string>('DATABASE_SSL_ENABLED') === 'true'
             ? {
                 rejectUnauthorized:
                   configService.get<string>('DATABASE_REJECT_UNAUTHORIZED') ===
-                  'false',
+                  'true',
               }
             : undefined,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],

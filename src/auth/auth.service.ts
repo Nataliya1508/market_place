@@ -5,7 +5,6 @@ import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SellerResponseInterface } from '@app/saler/types/sellerResponse.interface';
 import { UserEntity } from '@app/user/entities/user.entity';
 import { Role } from '@app/user/enums/enums';
-import { UserResponseInterface } from '@app/user/types/userResponce.interface';
 import {
   BadRequestException,
   HttpException,
@@ -53,6 +52,7 @@ export class AuthService {
     }
     const savedUser = await this.userRepository.save(user);
     savedUser.buyer = buyer;
+    // user.buyer.id = buyer.id
     await this.userRepository.save(savedUser);
     const savedBuyer = await this.buyerRepository.save(buyer);
     return savedBuyer;
@@ -96,13 +96,13 @@ export class AuthService {
     );
   }
 
-   async login(
+  async login(
     userLoginDto: UserLoginDto,
   ): Promise<BuyerResponseInterface | SellerResponseInterface> {
     const user = await this.userRepository.findOne({
       where: { email: userLoginDto.email },
       select: ['id', 'email', 'emailVerified', 'role', 'password'],
-      relations: ['buyer', 'seller'],
+      relations: ['buyer', 'seller']
     });
 
     if (!user) {
@@ -119,18 +119,17 @@ export class AuthService {
     if (!isPasswordCorrect) {
       throw new BadRequestException('Invalid password provided');
     }
-     console.log("userBuyer", user)
     if (user.role === Role.Buyer) {
       const buyerResponse: BuyerResponseInterface = {
         buyer: { ...user.buyer, token: this.generateJwt(user) },
       };
-      console.log("Buyer", user.buyer)
       delete user.password;
       return buyerResponse;
     } else if (user.role === Role.Seller) {
       const sellerResponse: SellerResponseInterface = {
         seller: { ...user.seller, token: this.generateJwt(user) },
       };
+      console.log("Buyer", user.buyer)
       delete user.password;
       return sellerResponse;
     }

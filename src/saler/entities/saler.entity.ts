@@ -61,10 +61,10 @@ export class SellerEntity {
   @JoinColumn()
   user: UserEntity;
 
-  @BeforeInsert()
-  async hashPassword() {
-    if (this.user && this.user.password) {
-      this.user.password = await hash(this.user.password, 10);
-    }
-  }
+  // @BeforeInsert()
+  // async hashPassword() {
+  //   if (this.user && this.user.password) {
+  //     this.user.password = await hash(this.user.password, 10);
+  //   }
+  // }
 }

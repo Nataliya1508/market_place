@@ -24,7 +24,7 @@ export class BuyerEntity {
   image: string;
 
   @Column({ unique: true })
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Column({ default: '' })
   address: string;

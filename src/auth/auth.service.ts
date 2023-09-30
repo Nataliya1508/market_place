@@ -51,9 +51,7 @@ export class AuthService {
       );
     }
     const savedUser = await this.userRepository.save(user);
-    savedUser.buyer = buyer;
-    // user.buyer.id = buyer.id
-    await this.userRepository.save(savedUser);
+    buyer.user = savedUser;
     const savedBuyer = await this.buyerRepository.save(buyer);
     return savedBuyer;
   }
@@ -79,8 +77,7 @@ export class AuthService {
       );
     }
     const savedUser = await this.userRepository.save(user);
-    savedUser.seller = seller;
-    await this.userRepository.save(savedUser);
+    seller.user = savedUser;
     const savedSeller = await this.sellerRepository.save(seller);
     return savedSeller;
   }

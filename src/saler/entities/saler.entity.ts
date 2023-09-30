@@ -19,7 +19,7 @@ export class SellerEntity {
   companyName: string;
 
   @Column({ unique: true })
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Column({ unique: true })
   email: string;

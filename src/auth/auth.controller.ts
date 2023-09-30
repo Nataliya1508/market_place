@@ -20,7 +20,7 @@ export class AuthController {
   ) {}
   @Post('/register/buyer')
   async registerBuyer(
-    @Body('buyer') createBuyerDto: CreateBuyerDto,
+    @Body() createBuyerDto: CreateBuyerDto,
   ): Promise<BuyerResponseInterface> {
     const buyer = await this.authService.createBuyer(createBuyerDto);
     return this.buyerService.buildBuyerResponse(buyer);
@@ -28,7 +28,7 @@ export class AuthController {
 
   @Post('/register/seller')
   async registerSeller(
-    @Body('seller') createSellerDto: CreateSellerDto,
+    @Body() createSellerDto: CreateSellerDto,
   ): Promise<SellerResponseInterface> {
     const seller = await this.authService.createSeller(createSellerDto);
     return this.sellerService.buildSellerResponse(seller);
@@ -36,7 +36,7 @@ export class AuthController {
 
   @Post('/login')
     async login(
-    @Body('users') userLoginDto: UserLoginDto,
+    @Body() userLoginDto: UserLoginDto,
   ): Promise<BuyerResponseInterface | SellerResponseInterface> {
     return await this.authService.login(userLoginDto);
 // const user = await this.authService.login(userLoginDto);

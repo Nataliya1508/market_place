@@ -11,6 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Role } from '../enums/enums';
 
 @Entity({ name: 'users' })
@@ -39,6 +40,7 @@ export class UserEntity {
   seller: SellerEntity;
 
   // @BeforeUpdate()
+  
   @BeforeInsert()
   async hashPassword() {
     this.password = await hash(this.password, 10);

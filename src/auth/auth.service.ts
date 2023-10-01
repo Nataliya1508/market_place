@@ -1,5 +1,6 @@
 import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
 import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
+import { MailService } from '@app/mail/mail.service';
 import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SellerResponseInterface } from '@app/saler/types/sellerResponse.interface';
@@ -13,12 +14,17 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 import { Repository } from 'typeorm';
+
 import { UserLoginDto } from './dto/user-login.dto';
+import { ForgotPasswordTokenPayload } from './types/forgotPasswordTokenPayload.interface';
+import { VerificationTokenPayload } from './types/verificationTokenPayload.interface';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +35,8 @@ export class AuthService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(SellerEntity)
     private readonly sellerRepository: Repository<SellerEntity>,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
   ) {}
   async createBuyer(createBuyerDto: CreateBuyerDto): Promise<BuyerEntity> {
     const user = new UserEntity();
@@ -44,6 +52,7 @@ export class AuthService {
     const buyerByPhoneNumber = await this.buyerRepository.findOne({
       where: { phoneNumber: createBuyerDto.phoneNumber },
     });
+
     if (buyerByEmail || buyerByPhoneNumber) {
       throw new HttpException(
         'Email or Phone is already in use ',
@@ -53,6 +62,9 @@ export class AuthService {
     const savedUser = await this.userRepository.save(user);
     buyer.user = savedUser;
     const savedBuyer = await this.buyerRepository.save(buyer);
+
+    await this.sendVerificationMessage({ email: savedUser.email });
+
     return savedBuyer;
   }
 
@@ -70,6 +82,7 @@ export class AuthService {
     const sellerByPhoneNumber = await this.sellerRepository.findOne({
       where: { phoneNumber: createSellerDto.phoneNumber },
     });
+
     if (sellerByEmail || sellerByPhoneNumber) {
       throw new HttpException(
         'Email or Phone is already in use ',
@@ -79,6 +92,9 @@ export class AuthService {
     const savedUser = await this.userRepository.save(user);
     seller.user = savedUser;
     const savedSeller = await this.sellerRepository.save(seller);
+
+    await this.sendVerificationMessage({ email: savedSeller.email });
+
     return savedSeller;
   }
 
@@ -105,6 +121,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
   //     if (user.emailVerified === false) {
   //   throw new UnauthorizedException('Email is not verified');
   // }
@@ -116,11 +133,13 @@ export class AuthService {
     if (!isPasswordCorrect) {
       throw new BadRequestException('Invalid password provided');
     }
+
     if (user.role === Role.Buyer) {
       const buyerResponse: BuyerResponseInterface = {
         buyer: { ...user.buyer, token: this.generateJwt(user) },
       };
       delete user.password;
+
       return buyerResponse;
     } else if (user.role === Role.Seller) {
       const sellerResponse: SellerResponseInterface = {
@@ -128,9 +147,141 @@ export class AuthService {
       };
       console.log("Buyer", user.buyer)
       delete user.password;
+
       return sellerResponse;
     }
 
     throw new BadRequestException('Invalid user role');
+  }
+
+  public async sendVerificationMessage(
+    data: VerificationTokenPayload,
+  ): Promise<void> {
+    const secret = this.configService.get<string>('JWT_VERIFICATION_SECRET');
+    const expiresIn = this.configService.get<string>(
+      'JWT_VERIFICATION_EXPIRATION',
+    );
+    const token = jwt.sign(data, secret, { expiresIn });
+
+    await this.mailService.sendVerificationLetter({
+      to: data.email,
+      data: { token },
+    });
+  }
+
+  public async verifyEmail(
+    code: string,
+  ): Promise<BuyerResponseInterface | SellerResponseInterface> {
+    const { email } = await this.decodeVerificationCode(code);
+
+    await this.userRepository.update({ email }, { emailVerified: true });
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'emailVerified', 'role', 'password'],
+    });
+
+    delete user.password;
+
+    if (user.role === Role.Buyer) {
+      return { buyer: { ...user.buyer, token: this.generateJwt(user) } };
+    }
+
+    if (user.role === Role.Seller) {
+      return { seller: { ...user.seller, token: this.generateJwt(user) } };
+    }
+
+    throw new BadRequestException('Invalid user role');
+  }
+
+  private async decodeVerificationCode(
+    token: string,
+  ): Promise<{ email: string }> {
+    try {
+      const secret = this.configService.get('JWT_VERIFICATION_SECRET');
+
+      const payload = await jwt.verify(token, secret);
+
+      if (typeof payload === 'object' && 'email' in payload) {
+        return payload as { email: string };
+      }
+
+      throw new BadRequestException();
+    } catch (error) {
+      if (error?.name === 'TokenExpiredError') {
+        throw new BadRequestException('Email verification code expired');
+      }
+
+      throw new BadRequestException('Bad verification code');
+    }
+  }
+
+  public async forgotPassword(email: string): Promise<void> {
+    const payload: ForgotPasswordTokenPayload = { email };
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user || !user.emailVerified) {
+      throw new NotFoundException('User not found');
+    }
+
+    const secret = this.configService.get<string>('JWT_RESET_PASSWORD_SECRET');
+
+    const expiresIn = this.configService.get<string>(
+      'JWT_RESET_PASSWORD_EXPIRATION',
+    );
+    const token = jwt.sign(payload, secret, { expiresIn });
+
+    await this.mailService.sendForgotPasswordLetter({
+      to: email,
+      data: { token },
+    });
+  }
+
+  public async resetPassword(
+    code: string,
+    password: string,
+  ): Promise<BuyerResponseInterface | SellerResponseInterface> {
+    const email = await this.decodeResetPasswordCode(code);
+
+    await this.userRepository.update({ email }, { password });
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'emailVerified', 'role', 'password'],
+    });
+
+    delete user.password;
+
+    if (user.role === Role.Buyer) {
+      return { buyer: { ...user.buyer, token: this.generateJwt(user) } };
+    }
+
+    if (user.role === Role.Seller) {
+      return { seller: { ...user.seller, token: this.generateJwt(user) } };
+    }
+
+    throw new BadRequestException('Invalid user role');
+  }
+
+  private async decodeResetPasswordCode(code: string): Promise<string> {
+    try {
+      const secret = this.configService.get('JWT_RESET_PASSWORD_SECRET');
+      const payload = await jwt.verify(code, secret);
+
+      if (typeof payload === 'object' && 'email' in payload) {
+        return payload.email;
+      }
+
+      throw new BadRequestException();
+    } catch (error) {
+      if (error?.name === 'TokenExpiredError') {
+        throw new BadRequestException('Password reset code has expired');
+      }
+
+      throw new BadRequestException('Bad password reset code');
+    }
   }
 }

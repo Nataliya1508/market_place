@@ -60,11 +60,10 @@ export class AuthService {
       );
     }
     const savedUser = await this.userRepository.save(user);
-    savedUser.buyer = buyer;
-    await this.userRepository.save(savedUser);
+    buyer.user = savedUser;
     const savedBuyer = await this.buyerRepository.save(buyer);
 
-    await this.sendVerificationMessage({ email: savedBuyer.email });
+    await this.sendVerificationMessage({ email: savedUser.email });
 
     return savedBuyer;
   }
@@ -91,8 +90,7 @@ export class AuthService {
       );
     }
     const savedUser = await this.userRepository.save(user);
-    savedUser.seller = seller;
-    await this.userRepository.save(savedUser);
+    seller.user = savedUser;
     const savedSeller = await this.sellerRepository.save(seller);
 
     await this.sendVerificationMessage({ email: savedSeller.email });
@@ -117,16 +115,16 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { email: userLoginDto.email },
       select: ['id', 'email', 'emailVerified', 'role', 'password'],
+      relations: ['buyer', 'seller']
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    if (user.emailVerified === false) {
-      throw new UnauthorizedException('Email is not verified');
-    }
-
+  //     if (user.emailVerified === false) {
+  //   throw new UnauthorizedException('Email is not verified');
+  // }
     const isPasswordCorrect = await compare(
       userLoginDto.password,
       user.password,
@@ -147,6 +145,7 @@ export class AuthService {
       const sellerResponse: SellerResponseInterface = {
         seller: { ...user.seller, token: this.generateJwt(user) },
       };
+      console.log("Buyer", user.buyer)
       delete user.password;
 
       return sellerResponse;

@@ -7,7 +7,7 @@ export class CreateSellerDto extends CreateUserDto {
   @IsNotEmpty()
   readonly lastName: string;
   @IsNotEmpty()
-  readonly phoneNumber: number;
+  readonly phoneNumber: string;
   @IsNotEmpty()
   readonly companyName: string;
   @IsNotEmpty()

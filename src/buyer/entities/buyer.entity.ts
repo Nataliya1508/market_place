@@ -24,7 +24,7 @@ export class BuyerEntity {
   image: string;
 
   @Column({ unique: true })
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Column({ default: '' })
   address: string;
@@ -38,7 +38,7 @@ export class BuyerEntity {
   })
   @JoinColumn()
   user: UserEntity;
-  email: string;
+  // email: string;
 
   //   @BeforeInsert()
   // @BeforeUpdate()

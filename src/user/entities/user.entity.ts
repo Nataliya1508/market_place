@@ -34,14 +34,13 @@ export class UserEntity {
   role: Role;
 
   @OneToOne(() => BuyerEntity, (buyer) => buyer.user)
-  @JoinColumn()
   buyer: BuyerEntity;
 
   @OneToOne(() => SellerEntity, (seller) => seller.user)
-  @JoinColumn()
   seller: SellerEntity;
 
-  @BeforeUpdate()
+  // @BeforeUpdate()
+  
   @BeforeInsert()
   async hashPassword() {
     this.password = await hash(this.password, 10);

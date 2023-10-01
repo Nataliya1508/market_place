@@ -19,7 +19,7 @@ export class SellerEntity {
   companyName: string;
 
   @Column({ unique: true })
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Column({ unique: true })
   email: string;
@@ -61,10 +61,10 @@ export class SellerEntity {
   @JoinColumn()
   user: UserEntity;
 
-  @BeforeInsert()
-  async hashPassword() {
-    if (this.user && this.user.password) {
-      this.user.password = await hash(this.user.password, 10);
-    }
-  }
+  // @BeforeInsert()
+  // async hashPassword() {
+  //   if (this.user && this.user.password) {
+  //     this.user.password = await hash(this.user.password, 10);
+  //   }
+  // }
 }

@@ -93,7 +93,7 @@ export class AuthService {
     seller.user = savedUser;
     const savedSeller = await this.sellerRepository.save(seller);
 
-    await this.sendVerificationMessage({ email: savedSeller.email });
+    await this.sendVerificationMessage({ email: savedUser.email });
 
     return savedSeller;
   }
@@ -176,19 +176,34 @@ export class AuthService {
 
     await this.userRepository.update({ email }, { emailVerified: true });
 
-    const user = await this.userRepository.findOne({
-      where: { email },
-      select: ['id', 'email', 'emailVerified', 'role', 'password'],
+        const buyer = await this.buyerRepository.findOne({
+          where: { user: { email } },
+          relations: ['user'],
+      select: ['id', 'address', 'image', 'isActive', 'lastName', 'name', 'phoneNumber', 'user'],
+        });
+        const seller = await this.sellerRepository.findOne({
+          where: { user: { email } },
+      select: ['id', 'address', 'image', 'isActive','phoneNumber','contactPerson', 'logo', 'typeSaler', 'workingHours', 'user'],
     });
+    console.log("seller", seller)
+    // delete seller.user.password;
 
-    delete user.password;
+    // delete buyer.user.password;
 
-    if (user.role === Role.Buyer) {
-      return { buyer: { ...user.buyer, token: this.generateJwt(user) } };
+    if (buyer && buyer.user.role === Role.Buyer) {
+          const buyerResponse: BuyerResponseInterface = {
+        buyer: { ...buyer, token: this.generateJwt(buyer.user) },
+          };
+      
+      return buyerResponse;
     }
 
-    if (user.role === Role.Seller) {
-      return { seller: { ...user.seller, token: this.generateJwt(user) } };
+   
+    if (seller.user.role === Role.Seller) {
+          const sellerResponse: SellerResponseInterface = {
+        seller: { ...seller, token: this.generateJwt(seller.user) },
+          };
+      return sellerResponse;
     }
 
     throw new BadRequestException('Invalid user role');

@@ -36,6 +36,7 @@ export class UserEntity {
   @OneToOne(() => BuyerEntity, (buyer) => buyer.user)
   buyer: BuyerEntity;
 
+
   @OneToOne(() => SellerEntity, (seller) => seller.user)
   seller: SellerEntity;
 

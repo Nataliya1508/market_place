@@ -11,7 +11,7 @@ export class SellerService {
       {
         id: seller.id,
         role: Role.Seller,
-        email: seller.email,
+        email: seller.user.email,
       },
       process.env.JWT_SECRET,
     );

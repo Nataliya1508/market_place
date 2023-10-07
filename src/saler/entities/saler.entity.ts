@@ -1,7 +1,6 @@
 import { hash } from 'bcrypt';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
-  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -20,9 +19,6 @@ export class SellerEntity {
 
   @Column({ unique: true })
   phoneNumber: string;
-
-  @Column({ unique: true })
-  email: string;
 
   @Column({ type: 'enum', enum: TypeSaler, default: TypeSaler.PrivatePerson })
   typeSaler: TypeSaler;
@@ -45,12 +41,6 @@ export class SellerEntity {
   @Column({ nullable: true })
   contactPerson: number;
 
-  @Column({ select: false })
-  password: string;
-
-  @Column({ default: false })
-  emailVerified: boolean;
-
   @Column({ default: false })
   isActive: boolean;
 
@@ -61,10 +51,5 @@ export class SellerEntity {
   @JoinColumn()
   user: UserEntity;
 
-  // @BeforeInsert()
-  // async hashPassword() {
-  //   if (this.user && this.user.password) {
-  //     this.user.password = await hash(this.user.password, 10);
-  //   }
-  // }
+
 }

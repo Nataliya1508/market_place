@@ -12,7 +12,6 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -115,16 +114,16 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { email: userLoginDto.email },
       select: ['id', 'email', 'emailVerified', 'role', 'password'],
-      relations: ['buyer', 'seller']
+      relations: ['buyer', 'seller'],
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-  //     if (user.emailVerified === false) {
-  //   throw new UnauthorizedException('Email is not verified');
-  // }
+    //     if (user.emailVerified === false) {
+    //   throw new UnauthorizedException('Email is not verified');
+    // }
     const isPasswordCorrect = await compare(
       userLoginDto.password,
       user.password,
@@ -145,7 +144,7 @@ export class AuthService {
       const sellerResponse: SellerResponseInterface = {
         seller: { ...user.seller, token: this.generateJwt(user) },
       };
-      console.log("Buyer", user.buyer)
+      console.log('Buyer', user.buyer);
       delete user.password;
 
       return sellerResponse;
@@ -176,33 +175,53 @@ export class AuthService {
 
     await this.userRepository.update({ email }, { emailVerified: true });
 
-        const buyer = await this.buyerRepository.findOne({
-          where: { user: { email } },
-          relations: ['user'],
-      select: ['id', 'address', 'image', 'isActive', 'lastName', 'name', 'phoneNumber', 'user'],
-        });
-        const seller = await this.sellerRepository.findOne({
-          where: { user: { email } },
-      select: ['id', 'address', 'image', 'isActive','phoneNumber','contactPerson', 'logo', 'typeSaler', 'workingHours', 'user'],
+    const buyer = await this.buyerRepository.findOne({
+      where: { user: { email } },
+      relations: ['user'],
+      select: [
+        'id',
+        'address',
+        'image',
+        'isActive',
+        'lastName',
+        'name',
+        'phoneNumber',
+        'user',
+      ],
     });
-    console.log("seller", seller)
+    const seller = await this.sellerRepository.findOne({
+      where: { user: { email } },
+      select: [
+        'id',
+        'address',
+        'image',
+        'isActive',
+        'phoneNumber',
+        'contactPerson',
+        'logo',
+        'typeSaler',
+        'workingHours',
+        'user',
+      ],
+    });
+    console.log('seller', seller);
     // delete seller.user.password;
 
     // delete buyer.user.password;
 
     if (buyer && buyer.user.role === Role.Buyer) {
-          const buyerResponse: BuyerResponseInterface = {
+      const buyerResponse: BuyerResponseInterface = {
         buyer: { ...buyer, token: this.generateJwt(buyer.user) },
-          };
-      
+      };
+
       return buyerResponse;
     }
 
-   
     if (seller.user.role === Role.Seller) {
-          const sellerResponse: SellerResponseInterface = {
+      const sellerResponse: SellerResponseInterface = {
         seller: { ...seller, token: this.generateJwt(seller.user) },
-          };
+      };
+
       return sellerResponse;
     }
 

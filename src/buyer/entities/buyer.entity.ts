@@ -1,7 +1,5 @@
-import { hash } from 'bcrypt';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
-  BeforeInsert,
   Column,
   Entity,
   JoinColumn,

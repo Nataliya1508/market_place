@@ -1,12 +1,14 @@
-import { hash } from 'bcrypt';
+import { ProductEntity } from '@app/product/entities/product.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { TypeSaler } from '../enums/enums';
 
 @Entity({ name: 'sellers' })
@@ -51,5 +53,6 @@ export class SellerEntity {
   @JoinColumn()
   user: UserEntity;
 
-
+  @OneToMany(() => ProductEntity, (product) => product.seller)
+  products: ProductEntity[];
 }

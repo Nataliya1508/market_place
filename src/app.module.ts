@@ -10,8 +10,12 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { BuyerModule } from './buyer/buyer.module';
 import { BuyerEntity } from './buyer/entities/buyer.entity';
+import { CategoryModule } from './category/category.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
+import { ProductModule } from './product/product.module';
+import { SubCategoryModule } from './sub-category/sub-category.module';
+import { SubSubcategoriesModule } from './sub-subcategories/sub-subcategories.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -28,11 +32,11 @@ import { UserModule } from './user/user.module';
         database: configService.get<string>('DATABASE_NAME'),
         synchronize: false,
         ssl:
-          configService.get<string>('DATABASE_SSL_ENABLED') === 'true'
+          configService.get<string>('DATABASE_SSL_ENABLED') === 'false'
             ? {
                 rejectUnauthorized:
                   configService.get<string>('DATABASE_REJECT_UNAUTHORIZED') ===
-                  'true',
+                  'false',
               }
             : undefined,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
@@ -47,6 +51,10 @@ import { UserModule } from './user/user.module';
     MailerModule,
     AuthModule,
     UserModule,
+    ProductModule,
+    CategoryModule,
+    SubCategoryModule,
+    SubSubcategoriesModule,
   ],
   controllers: [BuyerController],
   providers: [BuyerService],

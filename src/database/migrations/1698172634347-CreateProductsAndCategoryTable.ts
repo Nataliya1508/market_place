@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateProductsAndCategotiesTables1698167557099 implements MigrationInterface {
-    name = 'CreateProductsAndCategotiesTables1698167557099'
+export class CreateProductsAndCategoryTable1698172634347 implements MigrationInterface {
+    name = 'CreateProductsAndCategoryTable1698172634347'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TYPE "public"."sub-subcategories_subcategory_enum" AS ENUM('Cow Milk', 'Goat Milk', 'Cottage Cheese', 'Cream', 'Butter', 'Olive Oil', 'Sunflower Oil', 'Corn Oil', 'Grapeseed Oil', 'Beef', 'Pork', 'Chicken', 'Turkey', 'Lamb', 'Steaks', 'Salami', 'Sausages', 'Smoked Meat')`);

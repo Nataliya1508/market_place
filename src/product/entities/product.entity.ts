@@ -53,7 +53,7 @@ export class ProductEntity {
   unit: string;
 
   @Column({ type: 'enum', enum: DeliveryType })
-  deliveryType: DeliveryType;
+  deliveryType: string;
 
   @Column({ nullable: true })
   address: string;
@@ -61,7 +61,7 @@ export class ProductEntity {
   @Column({ unique: true })
   phoneNumber: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @Column({ nullable: true })

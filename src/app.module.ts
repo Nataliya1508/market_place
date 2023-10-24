@@ -13,7 +13,9 @@ import { BuyerEntity } from './buyer/entities/buyer.entity';
 import { CategoryModule } from './category/category.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
+import { ProductEntity } from './product/entities/product.entity';
 import { ProductModule } from './product/product.module';
+import { ProductService } from './product/product.service';
 import { SubCategoryModule } from './sub-category/sub-category.module';
 import { SubSubcategoriesModule } from './sub-subcategories/sub-subcategories.module';
 import { UserModule } from './user/user.module';
@@ -44,7 +46,7 @@ import { UserModule } from './user/user.module';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([BuyerEntity, SellerEntity]),
+    TypeOrmModule.forFeature([BuyerEntity, SellerEntity, ProductEntity]),
     BuyerModule,
     SalerModule,
     MailModule,
@@ -57,7 +59,7 @@ import { UserModule } from './user/user.module';
     SubSubcategoriesModule,
   ],
   controllers: [BuyerController],
-  providers: [BuyerService],
+  providers: [BuyerService, ProductService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

@@ -3,7 +3,7 @@ import { BuyerController } from '@app/buyer/buyer.controller';
 import { BuyerService } from '@app/buyer/buyer.service';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
@@ -19,12 +19,20 @@ import { ProductService } from './product/product.service';
 import { SubCategoryModule } from './sub-category/sub-category.module';
 import { SubSubcategoriesModule } from './sub-subcategories/sub-subcategories.module';
 import { UserModule } from './user/user.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { FilesModule } from './files/files.module';
+import { CloudinaryController } from './cloudinary/cloudinary.controller';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+// import { AppService } from '../app.service';
+// import { AppController } from '../app.controller';
+// import { AppService } from '../app.service';
+// import { HttpModule, HttpService } from '@nestjs/axios';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, CloudinaryModule],
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => ({
         type: 'postgres',
         host: configService.get<string>('DATABASE_HOST'),
@@ -57,11 +65,13 @@ import { UserModule } from './user/user.module';
     CategoryModule,
     SubCategoryModule,
     SubSubcategoriesModule,
+    CloudinaryModule,
+    FilesModule,
   ],
   controllers: [BuyerController],
-  providers: [BuyerService, ProductService],
+  providers: [BuyerService, ProductService, CloudinaryService],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes({
       path: '*',

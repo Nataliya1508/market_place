@@ -8,13 +8,14 @@ import { ProductEntity } from './entities/product.entity';
 @Injectable()
 export class ProductService {
     constructor(@InjectRepository(ProductEntity) private readonly productRepository: Repository<ProductEntity>,) {}
-    async createProduct(currentSeller: SellerEntity, createProductDto: CreateProductDto): Promise<ProductEntity> {
+    async createProduct(currentSeller: SellerEntity, createProductDto: CreateProductDto,  imageUrl: string,): Promise<ProductEntity> {
+
         const product = new ProductEntity()
 
-        Object.assign(product, createProductDto);
+        Object.assign(product, createProductDto, imageUrl);
+        product.image = imageUrl,
         product.seller = currentSeller;
         product.createdAt = new Date()
-        console.log("product", product)
         return await this.productRepository.save(product);
     }
 }

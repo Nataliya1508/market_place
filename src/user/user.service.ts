@@ -1,6 +1,4 @@
-import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
 import { BuyerType } from '@app/buyer/types/buyer.type';
-import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SellerType } from '@app/saler/types/seller.type';
 import { UserEntity } from '@app/user/entities/user.entity';
 import { CreateUser } from '@app/user/types/createUser.type';
@@ -9,8 +7,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { sign } from 'jsonwebtoken';
 import { DeepPartial, Repository } from 'typeorm';
-import { UserResponseInterface } from './types/userResponce.interface';
 
+import { UserResponseInterface } from './types/userResponce.interface';
 
 @Injectable()
 export class UserService {
@@ -50,7 +48,7 @@ export class UserService {
     await this.userRepository.update({ email }, { emailVerified: true });
   }
 
-    generateJwt(user: UserEntity): string {
+  generateJwt(user: UserEntity): string {
     return sign(
       {
         id: user.id,
@@ -60,19 +58,20 @@ export class UserService {
       process.env.JWT_SECRET,
     );
   }
-buildUserResponse(user: UserEntity): UserResponseInterface {
-  let userType: BuyerType | SellerType;
-  if (user.buyer) {
-    userType = user.buyer;
-  } else if (user.seller) {
-    userType = user.seller;
+  buildUserResponse(user: UserEntity): UserResponseInterface {
+    let userType: BuyerType | SellerType;
+
+    if (user.buyer) {
+      userType = user.buyer;
+    } else if (user.seller) {
+      userType = user.seller;
+    }
+
+    const userResponse: UserResponseInterface = {
+      user: userType,
+      token: this.generateJwt(user),
+    };
+
+    return userResponse;
   }
-
-  const userResponse: UserResponseInterface = {
-    user: userType,
-    token: this.generateJwt(user),
-  };
-
-  return userResponse;
-}
 }

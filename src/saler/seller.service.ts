@@ -1,6 +1,7 @@
 import { Role } from '@app/user/enums/enums';
 import { Injectable } from '@nestjs/common';
 import { sign } from 'jsonwebtoken';
+
 import { SellerEntity } from './entities/saler.entity';
 import { SellerResponseInterface } from './types/sellerResponse.interface';
 

@@ -1,8 +1,11 @@
 import { BuyerService } from '@app/buyer/buyer.service';
+import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
 import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
 import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
+import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SellerService } from '@app/saler/seller.service';
 import { SellerResponseInterface } from '@app/saler/types/sellerResponse.interface';
+import { User } from '@app/user/decorators/user.decorator';
 import { UserService } from '@app/user/user.service';
 import {
   Body,
@@ -12,7 +15,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 
 import { AuthService } from './auth.service';
@@ -28,7 +31,9 @@ export class AuthController {
     private readonly buyerService: BuyerService,
     private readonly sellerService: SellerService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
+  @ApiOperation({ summary: 'Buyer registration' })
+    @ApiResponse({status: 201, type: BuyerEntity})
   @Post('/register/buyer')
   async registerBuyer(
     @Body() createBuyerDto: CreateBuyerDto,
@@ -37,7 +42,8 @@ export class AuthController {
 
     return this.buyerService.buildBuyerResponse(buyer);
   }
-
+  @ApiOperation({ summary: 'Seller registration' }) 
+    @ApiResponse({status: 201, type: SellerEntity})
   @Post('/register/seller')
   async registerSeller(
     @Body() createSellerDto: CreateSellerDto,
@@ -46,7 +52,8 @@ export class AuthController {
 
     return this.sellerService.buildSellerResponse(seller);
   }
-
+  @ApiOperation({ summary: 'Successful response with a BuyerEntity or SellerEntity' }) 
+  @ApiResponse({ status: 200, type: [BuyerEntity || SellerEntity] })
   @Post('/login')
   async login(
     @Body() userLoginDto: UserLoginDto,

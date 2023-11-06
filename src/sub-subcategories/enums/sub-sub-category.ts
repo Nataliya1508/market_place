@@ -6,7 +6,7 @@ import { OilSubcategory } from '@app/product/enums/sub-category-for-grocery';
 import {
   FreshMeatSubcategory,
   SausagesSubcategory,
-} from '@app/product/enums/sub-category-for-Meat';
+} from '@app/product/enums/sub-category-for-meat';
 
 export const SubSubCategoryEnum = {
   ...MilkSubcategory,

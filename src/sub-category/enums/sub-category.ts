@@ -5,7 +5,7 @@ import { DairySubcategory } from '@app/product/enums/sub-category-for-dairy';
 import { EggsSubcategory } from '@app/product/enums/sub-category-for-eggs';
 import { FruitsAndVegetablesSubcategory } from '@app/product/enums/sub-category-for-fruits-vegetables';
 import { GrocerySubcategory } from '@app/product/enums/sub-category-for-grocery';
-import { MeatSubcategory } from '@app/product/enums/sub-category-for-Meat';
+import { MeatSubcategory } from '@app/product/enums/sub-category-for-meat';
 
 export const SubCategoryEnum = {
   ...DrinksSubcategory,

@@ -42,11 +42,11 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
         database: configService.get<string>('DATABASE_NAME'),
         synchronize: false,
         ssl:
-          configService.get<string>('DATABASE_SSL_ENABLED') === 'true'
+          configService.get<string>('DATABASE_SSL_ENABLED') === 'false'
             ? {
                 rejectUnauthorized:
                   configService.get<string>('DATABASE_REJECT_UNAUTHORIZED') ===
-                  'true',
+                  'false',
               }
             : undefined,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],

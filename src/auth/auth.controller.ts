@@ -1,6 +1,7 @@
 import { BuyerService } from '@app/buyer/buyer.service';
 import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
 import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
+import { CloudinaryService } from '@app/cloudinary/cloudinary.service';
 import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SellerService } from '@app/saler/seller.service';
@@ -14,7 +15,10 @@ import {
   HttpStatus,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 
@@ -31,24 +35,29 @@ export class AuthController {
     private readonly buyerService: BuyerService,
     private readonly sellerService: SellerService,
     private readonly userService: UserService,
+    private readonly cloudinaryService: CloudinaryService
   ) { }
   @ApiOperation({ summary: 'Buyer registration' })
     @ApiResponse({status: 201, type: BuyerEntity})
   @Post('/register/buyer')
+  @UseInterceptors(FileInterceptor('file'))
   async registerBuyer(
-    @Body() createBuyerDto: CreateBuyerDto,
+    @Body() createBuyerDto: CreateBuyerDto, @UploadedFile() file: Express.Multer.File,
   ): Promise<BuyerResponseInterface> {
-    const buyer = await this.authService.createBuyer(createBuyerDto);
+    const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
+    const buyer = await this.authService.createBuyer(createBuyerDto, cloudinaryResponse.url);
 
     return this.buyerService.buildBuyerResponse(buyer);
   }
   @ApiOperation({ summary: 'Seller registration' }) 
     @ApiResponse({status: 201, type: SellerEntity})
   @Post('/register/seller')
+    @UseInterceptors(FileInterceptor('file'))
   async registerSeller(
-    @Body() createSellerDto: CreateSellerDto,
+    @Body() createSellerDto: CreateSellerDto, @UploadedFile() file: Express.Multer.File,
   ): Promise<SellerResponseInterface> {
-    const seller = await this.authService.createSeller(createSellerDto);
+    const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
+    const seller = await this.authService.createSeller(createSellerDto, cloudinaryResponse.url);
 
     return this.sellerService.buildSellerResponse(seller);
   }

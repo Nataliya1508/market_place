@@ -1,6 +1,7 @@
 import { BuyerModule } from '@app/buyer/buyer.module';
 import { BuyerService } from '@app/buyer/buyer.service';
 import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
+import { CloudinaryService } from '@app/cloudinary/cloudinary.service';
 import { MailModule } from '@app/mail/mail.module';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';
@@ -23,7 +24,7 @@ import { AuthService } from './auth.service';
     SalerModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, BuyerService, SellerService, UserService],
+  providers: [AuthService, BuyerService, SellerService, UserService, CloudinaryService],
   exports: [AuthService],
 })
 export class AuthModule {}

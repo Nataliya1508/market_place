@@ -16,6 +16,9 @@ export class CreateProductDto {
 
   readonly carbohydrates: string;
 
+// @IsNotEmpty()
+  // readonly subcategory: string; 
+
   @IsNotEmpty()
   readonly price: number;
 

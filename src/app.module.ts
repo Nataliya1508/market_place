@@ -23,6 +23,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { FilesModule } from './files/files.module';
 import { CloudinaryController } from './cloudinary/cloudinary.controller';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CategoryEntity } from './category/entities/category.entity';
 // import { AppService } from '../app.service';
 // import { AppController } from '../app.controller';
 // import { AppService } from '../app.service';
@@ -54,7 +55,7 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([BuyerEntity, SellerEntity, ProductEntity]),
+    TypeOrmModule.forFeature([BuyerEntity, SellerEntity, ProductEntity, CategoryEntity]),
     BuyerModule,
     SalerModule,
     MailModule,

@@ -58,7 +58,7 @@ export class ProductEntity {
   @Column({ nullable: true })
   address: string;
 
-  @Column({ unique: true })
+  @Column()
   phoneNumber: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

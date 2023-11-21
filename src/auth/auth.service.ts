@@ -37,16 +37,19 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
   ) {}
-  async createBuyer(createBuyerDto: CreateBuyerDto, imageUrl: string): Promise<BuyerEntity> {
+  async createBuyer(
+    createBuyerDto: CreateBuyerDto,
+    imageUrl: string,
+  ): Promise<BuyerEntity> {
     const user = new UserEntity();
     user.email = createBuyerDto.email;
     user.password = createBuyerDto.password;
     user.role = Role.Buyer;
     const buyer = new BuyerEntity();
     buyer.name = createBuyerDto.name;
-    buyer.image = imageUrl
+    buyer.image = imageUrl;
     Object.assign(buyer, createBuyerDto);
-    
+
     const buyerByEmail = await this.userRepository.findOne({
       where: { email: createBuyerDto.email },
     });
@@ -69,14 +72,17 @@ export class AuthService {
     return savedBuyer;
   }
 
-  async createSeller(createSellerDto: CreateSellerDto, imageUrl: string): Promise<SellerEntity> {
+  async createSeller(
+    createSellerDto: CreateSellerDto,
+    imageUrl: string,
+  ): Promise<SellerEntity> {
     const user = new UserEntity();
     user.email = createSellerDto.email;
     user.password = createSellerDto.password;
     user.role = Role.Seller;
     const seller = new SellerEntity();
     seller.companyName = createSellerDto.companyName;
-seller.image = imageUrl
+    seller.image = imageUrl;
     Object.assign(seller, createSellerDto);
     const sellerByEmail = await this.userRepository.findOne({
       where: { email: createSellerDto.email },

@@ -3,7 +3,12 @@ import { BuyerController } from '@app/buyer/buyer.controller';
 import { BuyerService } from '@app/buyer/buyer.service';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SalerModule } from '@app/saler/saler.module';
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
@@ -11,6 +16,10 @@ import { AuthModule } from './auth/auth.module';
 import { BuyerModule } from './buyer/buyer.module';
 import { BuyerEntity } from './buyer/entities/buyer.entity';
 import { CategoryModule } from './category/category.module';
+import { CategoryEntity } from './category/entities/category.entity';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { FilesModule } from './files/files.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ProductEntity } from './product/entities/product.entity';
@@ -19,11 +28,6 @@ import { ProductService } from './product/product.service';
 import { SubCategoryModule } from './sub-category/sub-category.module';
 import { SubSubcategoriesModule } from './sub-subcategories/sub-subcategories.module';
 import { UserModule } from './user/user.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { FilesModule } from './files/files.module';
-import { CloudinaryController } from './cloudinary/cloudinary.controller';
-import { CloudinaryService } from './cloudinary/cloudinary.service';
-import { CategoryEntity } from './category/entities/category.entity';
 // import { AppService } from '../app.service';
 // import { AppController } from '../app.controller';
 // import { AppService } from '../app.service';
@@ -55,7 +59,12 @@ import { CategoryEntity } from './category/entities/category.entity';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([BuyerEntity, SellerEntity, ProductEntity, CategoryEntity]),
+    TypeOrmModule.forFeature([
+      BuyerEntity,
+      SellerEntity,
+      ProductEntity,
+      CategoryEntity,
+    ]),
     BuyerModule,
     SalerModule,
     MailModule,

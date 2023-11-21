@@ -39,7 +39,7 @@ export class SellerEntity {
   workingHours: string;
 
   @ApiProperty({ example: 'image-url.jpg', description: 'The image URL of the company.' })
-  @Column({ default: '' })
+  @Column({ default: 'https://res.cloudinary.com/debx785xm/image/upload/v1698740839/xqj2utbevda5n8hfjkxf.jpg' })
   image: string;
 
   @ApiProperty({ example: 'logo-url.jpg', description: 'The logo URL of the company.' })
@@ -58,6 +58,7 @@ export class SellerEntity {
   @Column({ default: false })
   isActive: boolean;
 
+
   @ApiProperty({ type: () => UserEntity, description: 'The associated user entity.' })
   @OneToOne(() => UserEntity, (user) => user.seller, {
     eager: true,
@@ -69,4 +70,6 @@ export class SellerEntity {
   @ApiProperty({ type: () => [ProductEntity], description: 'The products associated with the seller.' })
   @OneToMany(() => ProductEntity, (product) => product.seller)
   products: ProductEntity[];
+
+  
 }

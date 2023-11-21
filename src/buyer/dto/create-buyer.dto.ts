@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 export class CreateBuyerDto extends CreateUserDto {
@@ -15,4 +15,8 @@ export class CreateBuyerDto extends CreateUserDto {
   @ApiProperty({ example: '+380995678900', description: 'The phone number of the buyer.' })
   @IsNotEmpty()
   readonly phoneNumber: string;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+    @IsOptional()
+  file?: Express.Multer.File;
 }

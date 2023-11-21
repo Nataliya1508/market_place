@@ -23,4 +23,6 @@ export class CreateSellerDto extends CreateUserDto {
   @ApiProperty({ example: 'Saksaganskogo, 121', description: 'The address of the company.' })
   @IsNotEmpty()
   readonly address: string;
+
+  
 }

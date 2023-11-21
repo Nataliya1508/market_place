@@ -19,7 +19,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
 
 import { AuthService } from './auth.service';
@@ -40,24 +40,41 @@ export class AuthController {
   @ApiOperation({ summary: 'Buyer registration' })
     @ApiResponse({status: 201, type: BuyerEntity})
   @Post('/register/buyer')
+    @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   async registerBuyer(
-    @Body() createBuyerDto: CreateBuyerDto, @UploadedFile() file: Express.Multer.File,
+    @Body() createBuyerDto: CreateBuyerDto, @UploadedFile() file?: Express.Multer.File,
   ): Promise<BuyerResponseInterface> {
+      let imageUrl: string | undefined = undefined;
+
+  if (file) {
     const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
-    const buyer = await this.authService.createBuyer(createBuyerDto, cloudinaryResponse.url);
+    imageUrl = cloudinaryResponse.url;
+  } else {
+    imageUrl = 'https://res.cloudinary.com/debx785xm/image/upload/v1698740839/xqj2utbevda5n8hfjkxf.jpg';
+  }
+    const buyer = await this.authService.createBuyer(createBuyerDto, imageUrl);
 
     return this.buyerService.buildBuyerResponse(buyer);
   }
   @ApiOperation({ summary: 'Seller registration' }) 
     @ApiResponse({status: 201, type: SellerEntity})
   @Post('/register/seller')
+    @ApiConsumes('multipart/form-data')
     @UseInterceptors(FileInterceptor('file'))
   async registerSeller(
-    @Body() createSellerDto: CreateSellerDto, @UploadedFile() file: Express.Multer.File,
+    @Body() createSellerDto: CreateSellerDto, @UploadedFile() file?: Express.Multer.File,
   ): Promise<SellerResponseInterface> {
+          let imageUrl: string | undefined = undefined;
+
+  if (file) {
     const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
-    const seller = await this.authService.createSeller(createSellerDto, cloudinaryResponse.url);
+    imageUrl = cloudinaryResponse.url;
+  } else {
+    imageUrl = 'https://res.cloudinary.com/debx785xm/image/upload/v1698740839/xqj2utbevda5n8hfjkxf.jpg';
+  }
+    // const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
+    const seller = await this.authService.createSeller(createSellerDto, imageUrl);
 
     return this.sellerService.buildSellerResponse(seller);
   }

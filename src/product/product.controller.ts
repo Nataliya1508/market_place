@@ -7,10 +7,12 @@ import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entit
 import { User } from '@app/user/decorators/user.decorator';
 import { Body, Controller, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { ProductService } from './product.service';
 
+@ApiTags('Product')
 @Controller('product')
     
 export class ProductController {

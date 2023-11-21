@@ -44,8 +44,9 @@ export class AuthService {
     user.role = Role.Buyer;
     const buyer = new BuyerEntity();
     buyer.name = createBuyerDto.name;
-    Object.assign(buyer, createBuyerDto, imageUrl);
     buyer.image = imageUrl
+    Object.assign(buyer, createBuyerDto);
+    
     const buyerByEmail = await this.userRepository.findOne({
       where: { email: createBuyerDto.email },
     });

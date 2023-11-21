@@ -75,8 +75,8 @@ export class AuthService {
     user.role = Role.Seller;
     const seller = new SellerEntity();
     seller.companyName = createSellerDto.companyName;
-    Object.assign(seller, createSellerDto, imageUrl);
-    seller.image = imageUrl
+seller.image = imageUrl
+    Object.assign(seller, createSellerDto);
     const sellerByEmail = await this.userRepository.findOne({
       where: { email: createSellerDto.email },
     });
@@ -92,6 +92,8 @@ export class AuthService {
     }
     const savedUser = await this.userRepository.save(user);
     seller.user = savedUser;
+    // delete seller.user.password;
+    // delete seller.password;
     const savedSeller = await this.sellerRepository.save(seller);
 
     await this.sendVerificationMessage({ email: savedUser.email });

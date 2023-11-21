@@ -10,7 +10,7 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Marketplace')
-    .setDescription('Documentation REST API') 
+    .setDescription('Documentation REST API')
     .setVersion('1.0.0')
     .addTag('API endpoints related to backend functionality')
     .addBearerAuth()

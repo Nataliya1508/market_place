@@ -24,7 +24,13 @@ import { AuthService } from './auth.service';
     SalerModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, BuyerService, SellerService, UserService, CloudinaryService],
+  providers: [
+    AuthService,
+    BuyerService,
+    SellerService,
+    UserService,
+    CloudinaryService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

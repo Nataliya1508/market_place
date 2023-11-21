@@ -18,5 +18,5 @@ export class CreateBuyerDto extends CreateUserDto {
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
     @IsOptional()
-  file?: Express.Multer.File;
+  readonly file?: Express.Multer.File;
 }

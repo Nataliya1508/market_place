@@ -14,7 +14,7 @@ import { TypeSaler } from '../enums/enums';
 
 @Entity({ name: 'sellers' })
 export class SellerEntity {
-  @ApiProperty({ example: 1, description: 'The unique identifier for the seller.' })
+  @ApiProperty({ example: 1, description: 'Unique seller ID' })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -59,7 +59,7 @@ export class SellerEntity {
   isActive: boolean;
 
 
-  @ApiProperty({ type: () => UserEntity, description: 'The associated user entity.' })
+  // @ApiProperty({ type: () => UserEntity, description: 'The associated user entity.' })
   @OneToOne(() => UserEntity, (user) => user.seller, {
     eager: true,
     onDelete: 'CASCADE',
@@ -67,7 +67,7 @@ export class SellerEntity {
   @JoinColumn()
   user: UserEntity;
 
-  @ApiProperty({ type: () => [ProductEntity], description: 'The products associated with the seller.' })
+  // @ApiProperty({ type: () => [ProductEntity], description: 'The products associated with the seller.' })
   @OneToMany(() => ProductEntity, (product) => product.seller)
   products: ProductEntity[];
 

@@ -2,7 +2,7 @@ import { BuyerService } from '@app/buyer/buyer.service';
 import { BuyerEntity } from '@app/buyer/entities/buyer.entity';
 import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
 import { CloudinaryService } from '@app/cloudinary/cloudinary.service';
-import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
+// import { CreateSellerDto } from '@app/saler/dto/create-seller.dto';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SellerService } from '@app/saler/seller.service';
 import { SellerResponseInterface } from '@app/saler/types/sellerResponse.interface';
@@ -19,15 +19,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateBuyerDto } from 'src/buyer/dto/create-buyer.dto';
-
+import { CreateSellerDto } from 'src/saler/dto/create-seller.dto';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -78,7 +79,7 @@ export class AuthController {
 
     return this.sellerService.buildSellerResponse(seller);
   }
-  @ApiOperation({ summary: 'Successful response with a BuyerEntity or SellerEntity' }) 
+  @ApiOperation({ summary: 'User login' }) 
   @ApiResponse({ status: 200, type: [BuyerEntity || SellerEntity] })
   @Post('/login')
   async login(

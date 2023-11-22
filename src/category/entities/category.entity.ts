@@ -9,8 +9,10 @@ export class CategoryEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: Category, default: '' })
-  name: Category;
+  // @Column({ type: 'enum', enum: Category, default: '' })
+  // name: Category;
+    @Column()
+  name: string;
 
   @OneToMany(() => ProductEntity, (product) => product.category)
   products: ProductEntity[];

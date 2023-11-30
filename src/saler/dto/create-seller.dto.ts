@@ -28,12 +28,18 @@ export class CreateSellerDto extends CreateUserDto {
   @IsNotEmpty()
   readonly companyName: string;
 
-  @ApiProperty({
-    example: 'Saksaganskogo, 121',
-    description: 'The address of the company.',
-  })
+  @ApiProperty({ example: 'Saksaganskogo, 121', description: 'The address of the company.' })
   @IsNotEmpty()
   readonly address: string;
+
+  @ApiProperty({ example: 'About the company...', description: 'Information about the company.' })
+    @IsNotEmpty()
+  readonly aboutUs: string;
+
+  @ApiProperty({ example: '9 AM - 9 PM', description: 'The working hours of the company.' })
+    @IsNotEmpty()
+  readonly workingHours: string;
+
   
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })

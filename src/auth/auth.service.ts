@@ -76,7 +76,9 @@ export class AuthService {
     user.role = Role.Seller;
     const seller = new SellerEntity();
     seller.companyName = createSellerDto.companyName;
-seller.image = imageUrl
+    seller.image = imageUrl;
+    seller.aboutUs = createSellerDto.aboutUs;
+    seller.workingHours = createSellerDto.workingHours;
     Object.assign(seller, createSellerDto);
     const sellerByEmail = await this.userRepository.findOne({
       where: { email: createSellerDto.email },

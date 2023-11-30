@@ -34,6 +34,7 @@ export class CreateSellerDto extends CreateUserDto {
   })
   @IsNotEmpty()
   readonly address: string;
+  
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
   @IsOptional()

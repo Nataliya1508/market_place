@@ -10,7 +10,6 @@ export type AppConfig = {
   headerLanguage: string;
 };
 
-
 export type AuthConfig = {
   secret?: string;
   expires?: string;
@@ -35,7 +34,6 @@ export type DatabaseConfig = {
   cert?: string;
 };
 
-
 export type FileConfig = {
   driver: string;
   accessKeyId?: string;
@@ -45,7 +43,6 @@ export type FileConfig = {
   awsS3Region?: string;
   maxFileSize: number;
 };
-
 
 export type MailConfig = {
   port: number;
@@ -58,7 +55,6 @@ export type MailConfig = {
   secure: boolean;
   requireTLS: boolean;
 };
-
 
 export type AllConfigType = {
   app: AppConfig;

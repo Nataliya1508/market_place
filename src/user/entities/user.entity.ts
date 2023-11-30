@@ -25,7 +25,10 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @ApiProperty({ example: false, description: 'The status of email verification' })
+  @ApiProperty({
+    example: false,
+    description: 'The status of email verification',
+  })
   @Exclude()
   @Column({ default: false })
   emailVerified: boolean;
@@ -36,7 +39,7 @@ export class UserEntity {
   password: string;
 
   @ApiProperty({ enum: Role, default: Role, description: 'User role' })
-  @Column({ type: 'enum', enum: Role, default: Role})
+  @Column({ type: 'enum', enum: Role, default: Role })
   role: Role;
 
   // @ApiProperty({ type: () => BuyerEntity, description: 'The associated buyer entity.' })

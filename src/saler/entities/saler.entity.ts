@@ -77,14 +77,11 @@ export class SellerEntity {
   @Column({ default: '' })
   logo: string;
 
-<<<<<<< HEAD
-  @ApiProperty({ example: 'About the company...', description: 'Information about the company.' })
-=======
+
   @ApiProperty({
     example: 'About the company...',
     description: 'Information about the seller.',
   })
->>>>>>> e13ed964996af62ef4a19413d4b26fcd0dae57f5
   @Column({ default: '' })
   aboutUs: string;
 

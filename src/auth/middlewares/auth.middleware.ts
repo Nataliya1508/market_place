@@ -1,6 +1,10 @@
 import { ExpressRequestInterfase } from '@app/types/expressRequest.interface';
 import { UserService } from '@app/user/user.service';
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NestMiddleware,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
@@ -19,7 +23,6 @@ export class AuthMiddleware implements NestMiddleware {
       return;
     }
     const token = req.headers.authorization.split(' ')[1];
-
     try {
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       const decode = verify(token, jwtSecret);
@@ -30,6 +33,7 @@ export class AuthMiddleware implements NestMiddleware {
       req.user = user;
     } catch (err) {
       req.user = null;
+      throw new BadRequestException('Invalid token');
     }
 
     next();

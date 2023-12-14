@@ -104,7 +104,6 @@ export class AuthService {
     seller.user = savedUser;
     // delete seller.user.password;
     // delete seller.password;
-    console.log('seller', seller)
     const savedSeller = await this.sellerRepository.save(seller);
 
     await this.sendVerificationMessage({ email: savedUser.email });
@@ -219,7 +218,6 @@ export class AuthService {
         'user',
       ],
     });
-    console.log('seller', seller);
     // delete seller.user.password;
 
     // delete buyer.user.password;

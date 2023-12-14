@@ -100,7 +100,6 @@ export class AuthController {
     // const user = await this.authService.login(userLoginDto);
     // console.log("user", user)
     //   return user;
-    
   }
 
   @ApiResponse({ status: HttpStatus.OK })

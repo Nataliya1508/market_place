@@ -20,4 +20,3 @@ export class SubCategoryService {
     return await this.categoryRepository.save(subCategory);
   }
 }
-

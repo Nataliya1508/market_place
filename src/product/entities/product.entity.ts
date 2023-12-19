@@ -85,7 +85,7 @@ export class ProductEntity {
 
     @ApiProperty({
     type: 'json',
-    description: 'Delivery types',
+    description: 'Delivery places',
     example: [
       { place: DeliveryPlace.Kyiv, selected: true },
       { place: DeliveryPlace.Suburbs, selected: false },

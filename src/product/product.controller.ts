@@ -6,7 +6,11 @@ import { User } from '@app/user/decorators/user.decorator';
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  ParseIntPipe,
+  Patch,
   Post,
   UploadedFile,
   UseGuards,
@@ -14,13 +18,16 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { ProductService } from './product.service';
 
@@ -57,8 +64,31 @@ export class ProductController {
     return product;
   }
 
-    @Get()
+  @Get()
+  @ApiOperation({ summary: 'Get all products', description: 'Get a list of all products for the current seller.' })
   findAll(@User() currentSeller: SellerEntity) {
     return this.productsService.findAll(currentSeller.id);
+  }
+  
+@ApiOperation({ summary: 'Update Product', description: 'Update product information' })
+@ApiParam({ name: 'id', description: 'Product id', type: 'string' })
+@ApiBody({ type: UpdateProductDto, description: 'Data for updating the product' })
+  @Patch(':id')
+  async update(
+    @User() currentSeller: SellerEntity,
+    @Param('id') productId: string,
+    @Body() payload: UpdateProductDto,
+  ) {
+    return await this.productsService.update(currentSeller.id, productId, payload);
+  }
+  
+  @Delete(':id')
+  @ApiOperation({ summary: 'Remove a product', description: 'Remove a product for the current seller by ID.' })
+  @ApiParam({ name: 'id', description: 'Product ID', type: String })
+  async remove(
+    @User() currentSeller: SellerEntity,
+    @Param('id') productId: string,
+  ) {
+    return await this.productsService.remove(currentSeller.id, productId);
   }
 }

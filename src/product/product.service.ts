@@ -48,4 +48,9 @@ export class ProductService {
 
     return await this.productRepository.save(product);
   }
+
+    async findAll(sellerId: number, ) {
+    const products = await this.productRepository.findBy({ seller: { id: sellerId } });
+    return products;
+  }
 }

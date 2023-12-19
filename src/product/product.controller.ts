@@ -6,6 +6,7 @@ import { User } from '@app/user/decorators/user.decorator';
 import {
   Body,
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseGuards,
@@ -24,7 +25,8 @@ import { ProductEntity } from './entities/product.entity';
 import { ProductService } from './product.service';
 
 @ApiTags('Product')
-@Controller('product')
+  @Controller('product')
+  @UseGuards(AuthGuard)
 export class ProductController {
   usersRepository: Promise<ProductEntity>;
   constructor(
@@ -35,7 +37,7 @@ export class ProductController {
   @ApiResponse({ status: 201, type: ProductEntity })
   @Post()
   @ApiConsumes('multipart/form-data')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async createProduct(
     @User() currentSeller: SellerEntity,
@@ -53,5 +55,10 @@ export class ProductController {
     );
 
     return product;
+  }
+
+    @Get()
+  findAll(@User() currentSeller: SellerEntity) {
+    return this.productsService.findAll(currentSeller.id);
   }
 }

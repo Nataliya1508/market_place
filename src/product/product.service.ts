@@ -42,6 +42,7 @@ export class ProductService {
     product.category.name = category.name;
     product.createdAt = new Date();
     product.category.id = categoryId;
+    product.deliveryTypes = ['Courier', 'Pickup'],
 
     console.log('product', product);
 

@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 
 import { DeliveryType } from '../enums/delivery-type';
+import { DeliveryPlace } from '../enums/deliveryPlace-type';
 
 @Entity({ name: 'products' })
 export class ProductEntity {
@@ -71,13 +72,29 @@ export class ProductEntity {
   @Column({ nullable: true })
   unit: string;
 
-  @ApiProperty({ example: 'Courier', description: 'Delivery type' })
-  @Column({ type: 'enum', enum: DeliveryType })
-  deliveryType: string;
+  // @ApiProperty({ example: 'Courier', description: 'Delivery type' })
+  // @Column({ type: 'enum', enum: DeliveryType })
+  // deliveryType: string;
+@ApiProperty({ type: 'json', description: 'Delivery types' })
+  @Column({ type: 'json', nullable: true })
+  deliveryTypes: string[];
 
   @ApiProperty({ example: 'Saksaganskogo, 121', description: 'Pickup address' })
   @Column({ nullable: true })
   address: string;
+
+    @ApiProperty({
+    type: 'json',
+    description: 'Delivery types',
+    example: [
+      { place: DeliveryPlace.Kyiv, selected: true },
+      { place: DeliveryPlace.Suburbs, selected: false },
+      { place: DeliveryPlace.OtherCities, selected: true },
+    ],
+  })
+  @Column({ type: 'json', nullable: true })
+  deliveryPlaces: { place: DeliveryPlace; selected: boolean }[];
+
 
   @ApiProperty({
     example: '+380956789000',
@@ -101,6 +118,10 @@ export class ProductEntity {
   @ApiProperty({ example: 'false', description: 'New product' })
   @Column({ nullable: true })
   newProduct: boolean;
+
+  @ApiProperty({ example: 'false', description: 'Active' })
+  @Column({ nullable: true })
+  isActive: boolean;
 
   @BeforeInsert()
   setNewStatus() {

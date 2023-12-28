@@ -1,14 +1,14 @@
-import { BuyerType } from '@app/buyer/types/buyer.type';
-import { SellerType } from '@app/saler/types/seller.type';
+import { BuyerResponseInterface } from '@app/buyer/types/buyerResponce.interface';
+import { SellerResponseInterface } from '@app/saler/types/sellerResponse.interface';
 import { UserEntity } from '@app/user/entities/user.entity';
 import { CreateUser } from '@app/user/types/createUser.type';
 import { EntityCondition } from '@app/utils/types/entityCondition.type';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { sign } from 'jsonwebtoken';
 import { DeepPartial, Repository } from 'typeorm';
 
-import { UserResponseInterface } from './types/userResponce.interface';
+import { Role } from './enums/enums';
 
 @Injectable()
 export class UserService {
@@ -48,6 +48,10 @@ export class UserService {
     await this.userRepository.update({ email }, { emailVerified: true });
   }
 
+  async findById(id: number): Promise<UserEntity> {
+    return this.userRepository.findOne({ where: { id } });
+  }
+
   generateJwt(user: UserEntity): string {
     return sign(
       {
@@ -58,20 +62,56 @@ export class UserService {
       process.env.JWT_SECRET,
     );
   }
-  buildUserResponse(user: UserEntity): UserResponseInterface {
-    let userType: BuyerType | SellerType;
 
-    if (user.buyer) {
-      userType = user.buyer;
-    } else if (user.seller) {
-      userType = user.seller;
+  buildUserResponse(
+    user: UserEntity,
+  ): BuyerResponseInterface | SellerResponseInterface {
+    if (user.role === Role.Buyer) {
+      const buyerResponse: BuyerResponseInterface = {
+        buyer: { ...user.buyer, token: this.generateJwt(user) },
+      };
+      delete user.password;
+
+      return buyerResponse;
+    } else if (user.role === Role.Seller) {
+      const sellerResponse: SellerResponseInterface = {
+        seller: { ...user.seller, token: this.generateJwt(user) },
+      };
+      delete user.password;
+
+      return sellerResponse;
     }
 
-    const userResponse: UserResponseInterface = {
-      user: userType,
-      token: this.generateJwt(user),
-    };
+    return {} as BuyerResponseInterface | SellerResponseInterface;
+  }
 
-    return userResponse;
+  async currentUser(
+    currentUser: UserEntity,
+  ): Promise<BuyerResponseInterface | SellerResponseInterface> {
+    const user = await this.userRepository.findOne({
+      where: { email: currentUser.email },
+      select: ['id', 'email', 'emailVerified', 'role', 'password'],
+      relations: ['buyer', 'seller'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.role === Role.Buyer) {
+      const buyerResponse: BuyerResponseInterface = {
+        buyer: { ...user.buyer, token: this.generateJwt(user) },
+      };
+      delete user.password;
+
+      return buyerResponse;
+    } else if (user.role === Role.Seller) {
+      const sellerResponse: SellerResponseInterface = {
+        seller: { ...user.seller, token: this.generateJwt(user) },
+      };
+      delete user.password;
+
+      return sellerResponse;
+    }
   }
 }

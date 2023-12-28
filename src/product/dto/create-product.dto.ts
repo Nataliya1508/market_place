@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsArray, IsNotEmpty } from 'class-validator';
+import { DeliveryPlace } from '../enums/deliveryPlace-type';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'Apple', description: 'The product name' })
@@ -44,9 +45,23 @@ export class CreateProductDto {
   @IsNotEmpty()
   readonly unit: string;
 
-  @ApiProperty({ example: 'Courier', description: 'Delivery type' })
+  // @ApiProperty({ example: 'Courier', description: 'Delivery type' })
+  // @IsNotEmpty()
+  // readonly deliveryTypes: [];
+  @ApiProperty({ type: 'json', description: 'Delivery types' })
+  @IsArray()
   @IsNotEmpty()
-  readonly deliveryType: string;
+  readonly deliveryTypes: string[];
+
+  @ApiProperty({ example: [
+      { place: DeliveryPlace.Kyiv, selected: true },
+      { place: DeliveryPlace.Suburbs, selected: false },
+      { place: DeliveryPlace.OtherCities, selected: true },
+  ], description: 'Delivery types'
+  })
+    @IsArray()
+  @IsNotEmpty()
+  readonly deliveryPlaces: { place: DeliveryPlace; selected: boolean }[];
 
   @ApiProperty({
     example: '+380956789000',

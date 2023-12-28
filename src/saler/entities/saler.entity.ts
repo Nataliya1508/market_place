@@ -18,16 +18,25 @@ export class SellerEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: 'Anna', description: 'The first name of the seller.' })
+  @ApiProperty({ example: 'Egor', description: 'The first name of the seller.' })
   @Column()
   name: string;
 
-   @ApiProperty({ example: 'Tolk', description: 'The last name of the seller.' })
+  // @ApiProperty({
+  //   example: 'Anna',
+  //   description: 'The first name of the seller.',
+  // })
+  // @Column()
+  // name: string;
+
+  @ApiProperty({ example: 'Tolk', description: 'The last name of the seller.' })
   @Column({ default: '' })
   lastName: string;
 
-  @ApiProperty({ example: 'FRUIT Company', description: 'The name of the company.' })
-
+  @ApiProperty({
+    example: 'FRUIT Company',
+    description: 'The name of the company.',
+  })
   @Column({ default: '' })
   companyName: string;
 
@@ -76,7 +85,6 @@ export class SellerEntity {
   })
   @Column({ default: '' })
   logo: string;
-
 
   @ApiProperty({
     example: 'About the company...',

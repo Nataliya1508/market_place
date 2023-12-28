@@ -21,7 +21,7 @@ export class AppService {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream((error, result) => {
         if (error) return reject(error);
-        console.log('result', result);
+        // console.log('result', result);
         resolve(result);
       });
 

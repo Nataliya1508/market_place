@@ -10,7 +10,7 @@ export class BuyerService {
   generateJwt(buyer: BuyerEntity): string {
     return sign(
       {
-        id: buyer.id,
+        id: buyer.user.id,
         role: Role.Buyer,
         // email: buyer.email,
       },

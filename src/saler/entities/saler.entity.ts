@@ -22,6 +22,17 @@ export class SellerEntity {
   @Column()
   name: string;
 
+  // @ApiProperty({
+  //   example: 'Anna',
+  //   description: 'The first name of the seller.',
+  // })
+  // @Column()
+  // name: string;
+
+  @ApiProperty({ example: 'Tolk', description: 'The last name of the seller.' })
+  @Column({ default: '' })
+  lastName: string;
+
   @ApiProperty({
     example: 'FRUIT Company',
     description: 'The name of the company.',

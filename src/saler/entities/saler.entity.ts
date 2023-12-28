@@ -18,12 +18,16 @@ export class SellerEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({
-    example: 'Anna',
-    description: 'The first name of the seller.',
-  })
+  @ApiProperty({ example: 'Egor', description: 'The first name of the seller.' })
   @Column()
   name: string;
+
+  // @ApiProperty({
+  //   example: 'Anna',
+  //   description: 'The first name of the seller.',
+  // })
+  // @Column()
+  // name: string;
 
   @ApiProperty({ example: 'Tolk', description: 'The last name of the seller.' })
   @Column({ default: '' })

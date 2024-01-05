@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiConsumes, ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty } from 'class-validator';
 import { DeliveryPlace } from '../enums/deliveryPlace-type';
 
@@ -7,11 +7,12 @@ export class CreateProductDto {
   @IsNotEmpty()
   readonly name: string;
 
-  @ApiProperty({
+  @ApiProperty({ type: 'string', format: 'binary', 
     example: 'image-url.jpg',
     description: 'The image URL of the product',
   })
-  readonly image: string;
+    // @ApiConsumes('multipart/form-data')
+  readonly file: string;
 
   @ApiProperty({
     example: 'About the product...',
@@ -48,10 +49,16 @@ export class CreateProductDto {
   // @ApiProperty({ example: 'Courier', description: 'Delivery type' })
   // @IsNotEmpty()
   // readonly deliveryTypes: [];
-  @ApiProperty({ type: 'json', description: 'Delivery types' })
-  @IsArray()
-  @IsNotEmpty()
-  readonly deliveryTypes: string[];
+
+  // @ApiProperty({ type: 'json', description: 'Delivery types' })
+  // @IsArray()
+  // @IsNotEmpty()
+  // readonly deliveryTypes: string[];
+
+  @ApiProperty({ type: [String], description: 'Delivery types' })
+// @IsArray()
+@IsNotEmpty()
+readonly deliveryTypes: string[];
 
   @ApiProperty({ example: [
       { place: DeliveryPlace.Kyiv, selected: true },
@@ -59,9 +66,13 @@ export class CreateProductDto {
       { place: DeliveryPlace.OtherCities, selected: true },
   ], description: 'Delivery types'
   })
-    @IsArray()
+    // @IsArray()
   @IsNotEmpty()
   readonly deliveryPlaces: { place: DeliveryPlace; selected: boolean }[];
+
+    @ApiProperty({  description: 'CategoriId' })
+@IsNotEmpty()
+readonly categoryId: string;
 
   @ApiProperty({
     example: '+380956789000',

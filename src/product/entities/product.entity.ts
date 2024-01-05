@@ -26,10 +26,11 @@ export class ProductEntity {
   @Column()
   name: string;
 
-  @ApiProperty({
+  @ApiProperty({  type: 'string', format: 'binary', 
     example: 'image-url.jpg',
     description: 'The image URL of the product',
   })
+  
   @Column({ default: '' })
   image: string;
 
@@ -75,7 +76,7 @@ export class ProductEntity {
   // @ApiProperty({ example: 'Courier', description: 'Delivery type' })
   // @Column({ type: 'enum', enum: DeliveryType })
   // deliveryType: string;
-@ApiProperty({ type: 'json', description: 'Delivery types' })
+@ApiProperty({ type: 'json', example: 'Courier', description: 'Delivery types' })
   @Column({ type: 'json', nullable: true })
   deliveryTypes: string[];
 

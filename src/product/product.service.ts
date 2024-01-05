@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
+import { DeliveryType } from './enums/delivery-type';
 
 @Injectable()
 export class ProductService {
@@ -42,7 +43,7 @@ export class ProductService {
     product.category.name = category.name;
     product.createdAt = new Date();
     product.category.id = categoryId;
-    product.deliveryTypes = ['Courier', 'Pickup'],
+    product.deliveryTypes = product.deliveryTypes,
 
     console.log('product', product);
 

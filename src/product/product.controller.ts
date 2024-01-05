@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiOperation,
@@ -33,7 +34,8 @@ import { ProductService } from './product.service';
 
 @ApiTags('Product')
   @Controller('product')
-  @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
+   @ApiBearerAuth()
 export class ProductController {
   usersRepository: Promise<ProductEntity>;
   constructor(

@@ -1,5 +1,6 @@
 import { CategoryEntity } from '@app/category/entities/category.entity';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
+import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entity';
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,18 +17,21 @@ export class ProductService {
     private readonly productRepository: Repository<ProductEntity>,
     @InjectRepository(CategoryEntity)
     private readonly categoryRepository: Repository<CategoryEntity>,
+    @InjectRepository(SubCategoryEntity)
+    private readonly subCategoryRepository: Repository<SubCategoryEntity>,
   ) {}
   async createProduct(
     currentSeller: SellerEntity,
     createProductDto: CreateProductDto,
     imageUrl: string,
     categoryId: string,
+    subCategoryId: string,
   ): Promise<ProductEntity> {
     console.log('categoryId', categoryId);
 
     const product = new ProductEntity();
 
-    Object.assign(product, createProductDto, categoryId);
+    Object.assign(product, createProductDto, categoryId, subCategoryId);
 
     (product.image = imageUrl), (product.seller = currentSeller);
 
@@ -39,8 +43,19 @@ export class ProductService {
     if (!category) {
       throw new BadRequestException('Category not found');
     }
+
+        const subCategory = await this.subCategoryRepository.findOne({
+      where: { id: subCategoryId },
+      select: ['id', 'name'],
+    });
+
+    if (!subCategory) {
+      throw new BadRequestException('SubCategory not found');
+    }
     product.category = category;
     product.category.name = category.name;
+    product.subcategory = subCategory;
+    // product.subsubcategory.name = subCategory.name;
     product.createdAt = new Date();
     product.category.id = categoryId;
     product.deliveryTypes = product.deliveryTypes,

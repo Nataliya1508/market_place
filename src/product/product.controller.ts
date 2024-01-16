@@ -53,6 +53,7 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @Body() selectedCategory: CategoryEntity,
     @Body('categoryId') categoryId: string,
+    @Body('subCategoryId') subCategoryId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ProductEntity> {
     const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
@@ -61,6 +62,7 @@ export class ProductController {
       createProductDto,
       cloudinaryResponse.url,
       categoryId,
+      subCategoryId,
     );
 
     return product;
@@ -93,4 +95,5 @@ export class ProductController {
   ) {
     return await this.productsService.remove(currentSeller.id, productId);
   }
+  
 }

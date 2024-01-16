@@ -15,11 +15,14 @@ export class SubCategoryEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    type: 'enum',
-    enum: SubCategoryEnum,
-  })
-  subCategory: string;
+  @Column()
+  name: string;
+
+  // @Column({
+  //   type: 'enum',
+  //   enum: SubCategoryEnum,
+  // })
+  // subCategory: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.subcategories)
   category: CategoryEntity;

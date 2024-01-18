@@ -54,6 +54,7 @@ export class ProductController {
     @Body() selectedCategory: CategoryEntity,
     @Body('categoryId') categoryId: string,
     @Body('subCategoryId') subCategoryId: string,
+    @Body('subSubCategoryId') subSubCategoryId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ProductEntity> {
     const cloudinaryResponse = await this.cloudinaryService.uploadFile(file);
@@ -63,6 +64,7 @@ export class ProductController {
       cloudinaryResponse.url,
       categoryId,
       subCategoryId,
+      subSubCategoryId
     );
 
     return product;

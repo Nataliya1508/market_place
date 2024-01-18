@@ -1,6 +1,7 @@
 import { CategoryEntity } from '@app/category/entities/category.entity';
 import { SellerEntity } from '@app/saler/entities/saler.entity';
 import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entity';
+import { SubSubCategoryEntity } from '@app/sub-subcategories/entities/sub-subcategories.entity';
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -19,6 +20,8 @@ export class ProductService {
     private readonly categoryRepository: Repository<CategoryEntity>,
     @InjectRepository(SubCategoryEntity)
     private readonly subCategoryRepository: Repository<SubCategoryEntity>,
+      @InjectRepository(SubSubCategoryEntity)
+    private readonly subSubCategoryRepository: Repository<SubSubCategoryEntity>,
   ) {}
   async createProduct(
     currentSeller: SellerEntity,
@@ -26,12 +29,13 @@ export class ProductService {
     imageUrl: string,
     categoryId: string,
     subCategoryId: string,
+    subSubCategoryId: string,
   ): Promise<ProductEntity> {
     console.log('categoryId', categoryId);
 
     const product = new ProductEntity();
 
-    Object.assign(product, createProductDto, categoryId, subCategoryId);
+    Object.assign(product, createProductDto, categoryId, subCategoryId, subSubCategoryId);
 
     (product.image = imageUrl), (product.seller = currentSeller);
 
@@ -52,15 +56,27 @@ export class ProductService {
     if (!subCategory) {
       throw new BadRequestException('SubCategory not found');
     }
+
+            const subSubCategory = await this.subSubCategoryRepository.findOne({
+      where: { id: subSubCategoryId },
+      select: ['id', 'name'],
+    });
+
+    if (!subSubCategory) {
+      throw new BadRequestException('SubSubCategory not found');
+    }
     product.category = category;
     product.category.name = category.name;
     product.subcategory = subCategory;
-    // product.subsubcategory.name = subCategory.name;
+    product.subsubcategory = subSubCategory;
     product.createdAt = new Date();
     product.category.id = categoryId;
     product.deliveryTypes = product.deliveryTypes,
 
-    console.log('product', product);
+      console.log('product', product);
+    //   if (!product.category || !product.subcategory || !product.subsubcategory) {
+    // throw new BadRequestException('Not found');
+  // }
 
     return await this.productRepository.save(product);
   }

@@ -27,6 +27,7 @@ import { ProductModule } from './product/product.module';
 import { ProductService } from './product/product.service';
 import { SubCategoryEntity } from './sub-category/entities/sub-category.entity';
 import { SubCategoryModule } from './sub-category/sub-category.module';
+import { SubSubCategoryEntity } from './sub-subcategories/entities/sub-subcategories.entity';
 import { SubSubcategoriesModule } from './sub-subcategories/sub-subcategories.module';
 import { UserModule } from './user/user.module';
 // import { AppService } from '../app.service';
@@ -65,7 +66,8 @@ import { UserModule } from './user/user.module';
       SellerEntity,
       ProductEntity,
       CategoryEntity,
-      SubCategoryEntity
+      SubCategoryEntity,
+      SubSubCategoryEntity
     ]),
     BuyerModule,
     SalerModule,

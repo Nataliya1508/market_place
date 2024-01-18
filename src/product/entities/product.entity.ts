@@ -168,5 +168,5 @@ export class ProductEntity {
     { eager: true, onDelete: 'CASCADE' },
   )
   @JoinColumn()
-  subsubcategory: SubCategoryEntity;
+  subsubcategory: SubSubCategoryEntity;
 }

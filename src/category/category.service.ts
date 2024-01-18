@@ -22,8 +22,12 @@ export class CategoryService {
   }
 
   async getCategoryByName(name: string): Promise<CategoryEntity | undefined> {
-    return this.categoryRepository.findOne({ where: { name }, relations: ['subcategories'] });
+    return this.categoryRepository.findOne({ where: { name }, relations: ['subcategories', 'subcategories.subsubcategories'] });
   }
+
+  async getAllCategories(): Promise<CategoryEntity[]> {
+  return this.categoryRepository.find({ relations: ['subcategories', 'subcategories.subsubcategories'] });
+}
   
           async remove(categoryId: string) {
     const category = await this.categoryRepository.findOne({

@@ -23,6 +23,10 @@ export class CategoryController {
     getSubcategories(@Query('category') category: string) {
     return this.categoryService.getCategoryByName(category);
   }
+    @Get()
+    getAllCategories() {
+    return this.categoryService.getAllCategories();
+  }
 
         @Delete(':id')
   @ApiOperation({ summary: 'Remove a category', description: 'Remove a category by ID' })

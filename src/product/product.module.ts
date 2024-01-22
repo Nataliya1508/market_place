@@ -1,6 +1,7 @@
 import { CategoryEntity } from '@app/category/entities/category.entity';
 import { CloudinaryService } from '@app/cloudinary/cloudinary.service';
 import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entity';
+import { SubSubCategoryEntity } from '@app/sub-subcategories/entities/sub-subcategories.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -9,7 +10,7 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductEntity, CategoryEntity, SubCategoryEntity])],
+  imports: [TypeOrmModule.forFeature([ProductEntity, CategoryEntity, SubCategoryEntity, SubSubCategoryEntity])],
   controllers: [ProductController],
   providers: [ProductService, CloudinaryService],
   exports: [ProductService],

@@ -1,5 +1,6 @@
 import { ProductEntity } from '@app/product/entities/product.entity';
 import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entity';
+import { SubSubCategoryEntity } from '@app/sub-subcategories/entities/sub-subcategories.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'categories' })
@@ -17,4 +18,7 @@ export class CategoryEntity {
 
   @OneToMany(() => SubCategoryEntity, (subcategory) => subcategory.category)
   subcategories: SubCategoryEntity[];
+
+  //   @OneToMany(() => SubSubCategoryEntity, (subsubcategory) => subsubcategory.category)
+  // subsubcategories: SubCategoryEntity[];
 }

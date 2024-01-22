@@ -1,3 +1,4 @@
+import { CategoryEntity } from '@app/category/entities/category.entity';
 import { ProductEntity } from '@app/product/entities/product.entity';
 import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entity';
 import {
@@ -15,14 +16,17 @@ export class SubSubCategoryEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    type: 'enum',
-    enum: SubSubCategoryEnum,
-  })
-  subCategory: string;
+  @Column()
+  name: string;
 
-  //   @ManyToOne(() => CategoryEntity, (category) => category.subcategories)
-  //   category: CategoryEntity;
+  // @Column({
+  //   type: 'enum',
+  //   enum: SubSubCategoryEnum,
+  // })
+  // subCategory: string;
+
+    // @ManyToOne(() => CategoryEntity, (category) => category.subsubcategories)
+    // category: CategoryEntity;
 
   @ManyToOne(
     () => SubCategoryEntity,

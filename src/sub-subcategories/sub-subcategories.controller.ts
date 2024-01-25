@@ -1,6 +1,6 @@
+import { CreateSubSubCategoryDto } from '@app/sub-category/dto/create-sub-sub-category.dto';
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
-import { CreateSubSubCategoryDto } from './dto/create-sub-subCategory.dto';
 import { SubSubCategoryEntity } from './entities/sub-subcategories.entity';
 import { SubSubcategoriesService } from './sub-subcategories.service';
 

@@ -1,8 +1,8 @@
+import { CreateSubSubCategoryDto } from '@app/sub-category/dto/create-sub-sub-category.dto';
 import { SubCategoryEntity } from '@app/sub-category/entities/sub-category.entity';
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateSubSubCategoryDto } from './dto/create-sub-subCategory.dto';
 import { SubSubCategoryEntity } from './entities/sub-subcategories.entity';
 
 @Injectable()

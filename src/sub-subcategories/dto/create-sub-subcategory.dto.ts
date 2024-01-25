@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsUUID } from 'class-validator';
+// import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class CreateSubSubCategoryDto {
-  @IsNotEmpty()
-  readonly name: string;
+// export class CreateSubSubCategoryDto {
+//   @IsNotEmpty()
+//   readonly name: string;
     
-  @IsUUID()
-  readonly subCategoryId: string;
-}
+//   @IsUUID()
+//   readonly subCategoryId: string;
+// }
